@@ -1,67 +1,101 @@
-CREATE TABLE users (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NOT NULL,
-    full_name VARCHAR(100),
-    resume_url VARCHAR(255),  -- For uploaded resumes
-    experience_years INT,
-    github_url VARCHAR(255),
-    linkedin_url VARCHAR(255),
-    phone VARCHAR(20),
-    location VARCHAR(100),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
--- Job Categories table
-CREATE TABLE job_categories (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(100) NOT NULL,
-    icon_class VARCHAR(50),  -- For storing flaticon classes
-    job_count INT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+CREATE TABLE User (
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    name TEXT NOT NULL,
+    password TEXT,
+    isVerified BOOLEAN DEFAULT FALSE,
+    role ENUM('USER', 'ADMIN', 'HR') DEFAULT 'USER',
+    email TEXT UNIQUE NOT NULL,
+    emailVerified DATETIME,
+    skills JSON,
+    resume TEXT,
+    createdAt DATETIME DEFAULT NOW(),
+    blockedByAdmin DATETIME,
+    onBoard BOOLEAN DEFAULT FALSE,
+    githubLink TEXT,
+    portfolioLink TEXT,
+    linkedinLink TEXT,
+    twitterLink TEXT,
+    contactEmail TEXT,
+    aboutMe TEXT,
+    resumeUpdateDate DATETIME,
+    companyId CHAR(36) UNIQUE,
+    FOREIGN KEY (companyId) REFERENCES Company(id) ON DELETE SET NULL
 );
 
--- Companies table
-CREATE TABLE companies (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(100) NOT NULL,
-    logo_url VARCHAR(255),
+CREATE TABLE Company (
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    companyName TEXT NOT NULL,
+    companyLogo TEXT,
+    companyEmail TEXT NOT NULL,
+    companyBio TEXT NOT NULL
+);
+
+CREATE TABLE Job (
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    userId CHAR(36) NOT NULL,
+    title TEXT NOT NULL,
     description TEXT,
-    location VARCHAR(100),
-    website VARCHAR(255),
-    contact_email VARCHAR(100),
-    contact_phone VARCHAR(20),
-    address TEXT
+    companyName TEXT NOT NULL,
+    companyBio TEXT NOT NULL,
+    companyEmail TEXT NOT NULL,
+    category TEXT NOT NULL,
+    type ENUM('Full_time', 'Part_time', 'Internship', 'Contract') NOT NULL,
+    workMode ENUM('remote', 'hybrid', 'office') NOT NULL,
+    currency ENUM('INR', 'USD') DEFAULT 'INR',
+    city TEXT NOT NULL,
+    address TEXT NOT NULL,
+    application TEXT NOT NULL,
+    companyLogo TEXT NOT NULL,
+    skills JSON,
+    expired BOOLEAN DEFAULT FALSE,
+    hasExpiryDate BOOLEAN DEFAULT FALSE,
+    expiryDate DATETIME,
+    hasSalaryRange BOOLEAN DEFAULT FALSE,
+    minSalary INT,
+    maxSalary INT,
+    hasExperiencerange BOOLEAN DEFAULT FALSE,
+    minExperience INT,
+    maxExperience INT,
+    isVerifiedJob BOOLEAN DEFAULT FALSE,
+    deleted BOOLEAN DEFAULT FALSE,
+    deletedAt DATETIME,
+    postedAt DATETIME DEFAULT NOW(),
+    updatedAt DATETIME DEFAULT NOW() ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE
 );
 
--- Jobs table
-CREATE TABLE jobs (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    title VARCHAR(100) NOT NULL,
-    company_id INT,
-    category_id INT,
-    description TEXT,
-    requirements TEXT,
-    salary_min DECIMAL(10,2),
-    salary_max DECIMAL(10,2),
-    location VARCHAR(100),
-    job_type ENUM('Full Time', 'Part Time', 'Contract', 'Freelance'),
-    posted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    status ENUM('active', 'closed', 'draft') DEFAULT 'active',
-    FOREIGN KEY (company_id) REFERENCES companies(id),
-    FOREIGN KEY (category_id) REFERENCES job_categories(id)
+CREATE TABLE Bookmark (
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    jobId CHAR(36) NOT NULL,
+    userId CHAR(36) NOT NULL,
+    FOREIGN KEY (jobId) REFERENCES Job(id) ON DELETE CASCADE,
+    FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE
 );
 
--- Job Applications table
-CREATE TABLE job_applications (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    job_id INT,
-    user_id INT,
-    cv_url VARCHAR(255),
-    cover_letter TEXT,
-    status ENUM('pending', 'reviewed', 'shortlisted', 'rejected', 'accepted'),
-    applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (job_id) REFERENCES jobs(id),
-    FOREIGN KEY (user_id) REFERENCES users(id)
+CREATE TABLE Experience (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    companyName TEXT NOT NULL,
+    designation TEXT NOT NULL,
+    EmploymentType ENUM('Full_time', 'Part_time', 'Internship', 'Contract') NOT NULL,
+    address TEXT NOT NULL,
+    workMode ENUM('remote', 'hybrid', 'office') NOT NULL,
+    currentWorkStatus BOOLEAN NOT NULL,
+    startDate DATETIME NOT NULL,
+    endDate DATETIME,
+    description TEXT NOT NULL,
+    userId CHAR(36) NOT NULL,
+    FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE
 );
+
+CREATE TABLE Education (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    instituteName TEXT NOT NULL,
+    degree ENUM('BTech', 'MTech', 'BCA', 'MCA') NOT NULL,
+    startDate DATETIME NOT NULL,
+    endDate DATETIME,
+    userId CHAR(36) NOT NULL,
+    FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE
+);
+
 
