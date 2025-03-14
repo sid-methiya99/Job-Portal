@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./output.css" rel="stylesheet">
+    <title>100xJobs - Explore Jobs</title>
+</head>
+
+<body class="bg-[#0A0A29] text-white min-h-screen">
+    <!-- Navigation -->
+    <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <a href="index.html" class="text-2xl font-bold">100x<span class="text-purple-600">Jobs</span></a>
+        </div>
+        <div class="flex items-center gap-6">
+            <a href="explore.html" class="hover:text-purple-500">Explore jobs</a>
+            <a href="#" class="hover:text-purple-500">Contact us</a>
+            <button class="bg-gray-700 p-2 rounded-full">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                </svg>
+            </button>
+            <a href="login.html" class="bg-purple-600 px-6 py-2 rounded-full hover:bg-purple-700">Login</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="mb-12">
+            <h1 class="text-4xl font-bold mb-4">Explore Jobs</h1>
+            <p class="text-gray-400">Explore thousands of remote and onsite jobs that match your skills and aspirations.</p>
+        </div>
+
+        <div class="flex gap-8">
+            <!-- Filters Sidebar -->
+            <div class="w-64 flex-shrink-0">
+                <div class="bg-[#1A1A3F] rounded-xl p-6">
+                    <h2 class="text-xl font-semibold mb-6">All Filters</h2>
+
+                    <!-- Employment Type -->
+                    <div class="mb-6">
+                        <h3 class="font-medium mb-4">Employment Type</h3>
+                        <div class="space-y-3">
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" class="form-checkbox text-purple-600">
+                                <span>Full Time</span>
+                            </label>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" class="form-checkbox text-purple-600">
+                                <span>Part Time</span>
+                            </label>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" class="form-checkbox text-purple-600">
+                                <span>Internship</span>
+                            </label>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" class="form-checkbox text-purple-600">
+                                <span>Contract</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Work Mode -->
+                    <div class="mb-6">
+                        <h3 class="font-medium mb-4">Work mode</h3>
+                        <div class="space-y-3">
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" class="form-checkbox text-purple-600">
+                                <span>Remote</span>
+                            </label>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" class="form-checkbox text-purple-600">
+                                <span>Hybrid</span>
+                            </label>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" class="form-checkbox text-purple-600">
+                                <span>Office</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Salary Range -->
+                    <div class="mb-6">
+                        <h3 class="font-medium mb-4">Salary</h3>
+                        <div class="space-y-3">
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" class="form-checkbox text-purple-600">
+                                <span>$0-$5k</span>
+                            </label>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" class="form-checkbox text-purple-600">
+                                <span>$5-$10k</span>
+                            </label>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" class="form-checkbox text-purple-600">
+                                <span>$10-$30k</span>
+                            </label>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" class="form-checkbox text-purple-600">
+                                <span>$30-$50k</span>
+                            </label>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" class="form-checkbox text-purple-600">
+                                <span>$50k or above</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Jobs List -->
+            <div class="flex-1">
+                <!-- Search Bar -->
+                <div class="flex gap-4 mb-8">
+                    <div class="flex-1 relative">
+                        <input type="text" 
+                            placeholder="Search by title or company name" 
+                            class="w-full bg-[#1A1A3F] rounded-lg px-4 py-3 pl-10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600">
+                        <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+                    <select class="bg-[#1A1A3F] rounded-lg px-4 py-3 text-white">
+                        <option>Oldest Jobs</option>
+                        <option>Newest Jobs</option>
+                        <option>Most Relevant</option>
+                    </select>
+                </div>
+
+                <!-- Jobs Grid -->
+                <div class="space-y-4" id="jobsContainer">
+                    <!-- Job cards will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Same fetchRecentJobs and displayStaticJobs functions from before
+        // but modified to handle filters and search
+        document.addEventListener('DOMContentLoaded', fetchRecentJobs);
+    </script>
+</body>
+</html> 

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../output.css" rel="stylesheet">
+    <title>100xJobs - Company Dashboard</title>
+</head>
+
+<body class="bg-[#0A0A29] text-white min-h-screen">
+    <!-- Navigation -->
+    <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <a href="../index.html" class="text-2xl font-bold">100x<span class="text-purple-600">Jobs</span></a>
+        </div>
+        <div class="flex items-center gap-6">
+            <a href="jobs.html" class="hover:text-purple-500">My Jobs</a>
+            <a href="post-job.html" class="hover:text-purple-500">Post a Job</a>
+            <button id="logoutBtn" class="bg-purple-600 px-6 py-2 rounded-full hover:bg-purple-700">Logout</button>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Stats Cards -->
+            <div class="bg-[#1A1A3F] rounded-xl p-6">
+                <h3 class="text-lg font-medium mb-2">Active Jobs</h3>
+                <p class="text-3xl font-bold text-purple-500" id="activeJobsCount">0</p>
+            </div>
+
+            <div class="bg-[#1A1A3F] rounded-xl p-6">
+                <h3 class="text-lg font-medium mb-2">Total Applications</h3>
+                <p class="text-3xl font-bold text-purple-500" id="applicationsCount">0</p>
+            </div>
+
+            <div class="bg-[#1A1A3F] rounded-xl p-6">
+                <h3 class="text-lg font-medium mb-2">Views</h3>
+                <p class="text-3xl font-bold text-purple-500" id="viewsCount">0</p>
+            </div>
+        </div>
+
+        <!-- Recent Jobs -->
+        <div class="mt-8">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Recent Jobs</h2>
+                <a href="post-job.html" class="bg-purple-600 px-4 py-2 rounded-lg hover:bg-purple-700">Post New Job</a>
+            </div>
+            <div class="space-y-4" id="recentJobs">
+                <!-- Jobs will be loaded here -->
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Check authentication
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('/auth/check-auth.php');
+                const data = await response.json();
+                
+                if (!data.isLoggedIn) {
+                    window.location.href = '../login.html';
+                } else {
+                    loadDashboardData();
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                window.location.href = '../login.html';
+            }
+        });
+
+        async function loadDashboardData() {
+            try {
+                const response = await fetch('/api/companies/dashboard.php');
+                const data = await response.json();
+                
+                // Update stats
+                document.getElementById('activeJobsCount').textContent = data.activeJobs;
+                document.getElementById('applicationsCount').textContent = data.totalApplications;
+                document.getElementById('viewsCount').textContent = data.totalViews;
+
+                // Load recent jobs
+                const jobsContainer = document.getElementById('recentJobs');
+                data.recentJobs.forEach(job => {
+                    jobsContainer.innerHTML += `
+                        <div class="bg-[#1A1A3F] rounded-xl p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h3 class="text-xl font-semibold">${job.title}</h3>
+                                    <p class="text-gray-400">${job.location} • ${job.type}</p>
+                                </div>
+                                <span class="bg-purple-600/20 text-purple-500 px-3 py-1 rounded-full text-sm">
+                                    ${job.applications} applications
+                                </span>
+                            </div>
+                            <div class="flex gap-2">
+                                <a href="jobs.html?id=${job.id}" class="text-purple-500 hover:text-purple-400">View Details</a>
+                                <button onclick="deleteJob('${job.id}')" class="text-red-500 hover:text-red-400">Delete</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (error) {
+                console.error('Failed to load dashboard data:', error);
+            }
+        }
+
+        // Handle logout
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                await fetch('/auth/logout.php');
+                window.location.href = '../index.html';
+            } catch (error) {
+                console.error('Logout failed:', error);
+            }
+        });
+    </script>
+</body>
+</html> 

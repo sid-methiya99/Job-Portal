@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../output.css" rel="stylesheet">
+    <title>100xJobs - Admin - Companies</title>
+</head>
+
+<body class="bg-[#0A0A29] text-white min-h-screen">
+    <!-- Navigation -->
+    <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <a href="index.html" class="text-2xl font-bold">100x<span class="text-purple-600">Jobs</span></a>
+        </div>
+        <div class="flex items-center gap-6">
+            <a href="jobs.html" class="hover:text-purple-500">Jobs</a>
+            <a href="companies.html" class="hover:text-purple-500">Companies</a>
+            <a href="users.html" class="hover:text-purple-500">Users</a>
+            <button id="logoutBtn" class="bg-purple-600 px-6 py-2 rounded-full hover:bg-purple-700">Logout</button>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-8">Company Verification</h1>
+
+        <div class="space-y-6" id="pendingCompanies">
+            <!-- Companies will be loaded here -->
+        </div>
+    </main>
+
+    <script>
+        // Load pending companies
+        async function loadPendingCompanies() {
+            try {
+                const response = await fetch('/api/admin/pending-companies.php');
+                const data = await response.json();
+
+                const container = document.getElementById('pendingCompanies');
+                data.companies.forEach(company => {
+                    container.innerHTML += `
+                        <div class="bg-[#1A1A3F] rounded-xl p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h3 class="text-xl font-semibold">${company.name}</h3>
+                                    <p class="text-gray-400">${company.email}</p>
+                                    <p class="mt-2">${company.description}</p>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="verifyCompany('${company.id}', true)" 
+                                        class="bg-green-600 px-4 py-2 rounded-lg hover:bg-green-700">
+                                        Approve
+                                    </button>
+                                    <button onclick="verifyCompany('${company.id}', false)"
+                                        class="bg-red-600 px-4 py-2 rounded-lg hover:bg-red-700">
+                                        Reject
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (error) {
+                console.error('Failed to load companies:', error);
+            }
+        }
+
+        // Handle company verification
+        async function verifyCompany(id, approved) {
+            try {
+                const response = await fetch('/api/admin/verify-company.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({id, approved})
+                });
+
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    window.location.reload();
+                } else {
+                    alert('Failed to update company: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Verification failed:', error);
+                alert('Failed to verify company. Please try again.');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadPendingCompanies);
+    </script>
+</body>
+
+</html>

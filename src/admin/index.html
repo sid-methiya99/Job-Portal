@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../output.css" rel="stylesheet">
+    <title>100xJobs - Admin Dashboard</title>
+</head>
+
+<body class="bg-[#0A0A29] text-white min-h-screen">
+    <!-- Navigation -->
+    <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <a href="../index.html" class="text-2xl font-bold">100x<span class="text-purple-600">Jobs</span></a>
+        </div>
+        <div class="flex items-center gap-6">
+            <a href="jobs.html" class="hover:text-purple-500">Jobs</a>
+            <a href="users.html" class="hover:text-purple-500">Users</a>
+            <button id="logoutBtn" class="bg-purple-600 px-6 py-2 rounded-full hover:bg-purple-700">Logout</button>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <!-- Stats Cards -->
+            <div class="bg-[#1A1A3F] rounded-xl p-6">
+                <h3 class="text-lg font-medium mb-2">Total Users</h3>
+                <p class="text-3xl font-bold text-purple-500" id="usersCount">0</p>
+            </div>
+
+            <div class="bg-[#1A1A3F] rounded-xl p-6">
+                <h3 class="text-lg font-medium mb-2">Total Jobs</h3>
+                <p class="text-3xl font-bold text-purple-500" id="jobsCount">0</p>
+            </div>
+
+            <div class="bg-[#1A1A3F] rounded-xl p-6">
+                <h3 class="text-lg font-medium mb-2">Companies</h3>
+                <p class="text-3xl font-bold text-purple-500" id="companiesCount">0</p>
+            </div>
+
+            <div class="bg-[#1A1A3F] rounded-xl p-6">
+                <h3 class="text-lg font-medium mb-2">Applications</h3>
+                <p class="text-3xl font-bold text-purple-500" id="applicationsCount">0</p>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="mt-8">
+            <h2 class="text-2xl font-bold mb-6">Recent Activity</h2>
+            <div class="space-y-4" id="recentActivity">
+                <!-- Activity will be loaded here -->
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Similar authentication and data loading logic as company dashboard
+    </script>
+</body>
+</html> 

@@ -5,12 +5,205 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="./output.css" rel="stylesheet">
+    <title>100xJobs - Build Your Career</title>
 </head>
 
-<body>
-    <h1 class="text-3xl font-bold underline bg-blue-400 text-center">
-        Hello world!
-    </h1>
+<body class="bg-[#0A0A29] text-white min-h-screen">
+    <!-- Navigation -->
+    <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
+        <div class="flex items-center">
+            <span class="text-2xl font-bold">100x<span class="text-purple-600">Jobs</span></span>
+        </div>
+        <div class="flex items-center gap-6">
+            <a href="explore.html" class="hover:text-purple-500">Explore jobs</a>
+            <a href="#" class="hover:text-purple-500">Contact us</a>
+            <button class="bg-gray-700 p-2 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+            </button>
+            <a href="login.html" class="bg-purple-600 px-6 py-2 rounded-full hover:bg-purple-700">Login</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <main class="container mx-auto px-4 mt-20 text-center">
+        <div class="inline-flex items-center bg-[#1A1A3F] rounded-full px-4 py-2 mb-6">
+            <span class="text-purple-500 mr-2">#1</span>
+            <span class="text-gray-300">Platform for jobs</span>
+        </div>
+
+        <h1 class="text-5xl font-bold mb-6">
+            Build Your 
+            <span class="relative">
+                <span class="bg-purple-600 text-white px-4 py-1 rounded-lg">Career</span>
+            </span>
+            <br>with 100xJobs
+        </h1>
+
+        <p class="text-gray-400 text-xl max-w-2xl mx-auto mb-8">
+            Unlock exclusive job and internship opportunities. Remote, onsite, or hybrid—we've got what you're looking for.
+        </p>
+
+        <div class="flex justify-center gap-4 mb-16">
+            <a href="#jobs" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium">
+                Explore Jobs
+            </a>
+            <button class="border border-gray-600 hover:border-gray-500 text-gray-300 px-6 py-3 rounded-lg font-medium">
+                View Testimonials
+            </button>
+        </div>
+
+        <!-- Trusted Companies Section -->
+        <div class="mt-20 mb-32">
+            <div class="text-center mb-10">
+                <span class="text-purple-500 border border-purple-500/20 rounded-full px-4 py-2">
+                    Trusted By Leading Companies
+                </span>
+            </div>
+            <div class="flex justify-center items-center gap-12 grayscale opacity-50">
+                <img src="https://logo.clearbit.com/google.com" alt="Google" class="h-8">
+                <img src="https://logo.clearbit.com/microsoft.com" alt="Microsoft" class="h-8">
+                <img src="https://logo.clearbit.com/adobe.com" alt="Adobe" class="h-8">
+                <img src="https://logo.clearbit.com/apple.com" alt="Apple" class="h-8">
+                <img src="https://logo.clearbit.com/meta.com" alt="Meta" class="h-8">
+                <img src="https://logo.clearbit.com/amazon.com" alt="Amazon" class="h-8">
+            </div>
+        </div>
+
+        <!-- Recent Jobs Section -->
+        <section id="jobs" class="py-16">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold mb-4">Recently Added jobs</h2>
+                <p class="text-gray-400">Stay ahead with newly added jobs</p>
+            </div>
+
+            <!-- Jobs Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="jobsContainer">
+                <!-- Job cards will be dynamically inserted here -->
+            </div>
+
+            <!-- View All Jobs Button -->
+            <div class="text-center mt-12">
+                <a href="explore.html" class="text-purple-500 hover:text-purple-400 flex items-center justify-center gap-2">
+                    View all jobs
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Fetch and display recent jobs
+        async function fetchRecentJobs() {
+            try {
+                const response = await fetch('/api/jobs/recent.php');
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    displayJobs(data.data);
+                } else {
+                    // If API fails, show static example jobs
+                    displayStaticJobs();
+                }
+            } catch (error) {
+                console.error('Failed to fetch jobs:', error);
+                // Show static example jobs on error
+                displayStaticJobs();
+            }
+        }
+
+        function displayStaticJobs() {
+            const container = document.getElementById('jobsContainer');
+            
+            // Example static job cards
+            const staticJobs = [
+                {
+                    logo: 'https://logo.clearbit.com/google.com',
+                    title: 'QA Engineer',
+                    company: 'QA Solutions',
+                    type: 'Full Time',
+                    mode: 'Remote',
+                    location: 'Bangalore',
+                    experience: '2-5 Yrs',
+                    salary: '25K-50K INR',
+                    skills: ['Java', 'REST API', 'React']
+                },
+                {
+                    logo: 'https://logo.clearbit.com/microsoft.com',
+                    title: 'Full Stack Developer',
+                    company: 'Global Solutions',
+                    type: 'Full Time',
+                    mode: 'Hybrid',
+                    location: 'Mumbai',
+                    experience: '3-4 Yrs',
+                    salary: '90K-120K INR',
+                    skills: ['Node.js', 'React', 'MongoDB']
+                },
+                {
+                    logo: 'https://logo.clearbit.com/adobe.com',
+                    title: 'UX/UI Designer',
+                    company: 'Creative Designs',
+                    type: 'Full Time',
+                    mode: 'Remote',
+                    location: 'Delhi',
+                    experience: '1-2 Yrs',
+                    salary: '70K-90K INR',
+                    skills: ['Figma', 'Adobe XD', 'Sketch']
+                }
+            ];
+
+            staticJobs.forEach(job => {
+                container.innerHTML += `
+                    <div class="job-card">
+                        <div class="flex items-start gap-4 mb-4">
+                            <img src="${job.logo}" alt="${job.company}" class="w-12 h-12 rounded-lg bg-white p-2">
+                            <div>
+                                <h3 class="font-semibold text-xl">${job.title}</h3>
+                                <p class="text-gray-400">${job.company}</p>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex flex-wrap gap-2">
+                                <span class="badge badge-purple">${job.type}</span>
+                                <span class="badge badge-blue">${job.mode}</span>
+                            </div>
+                            <div class="job-info-item">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                </svg>
+                                <span>${job.location}</span>
+                            </div>
+                            <div class="job-info-item">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span>${job.experience}</span>
+                            </div>
+                            <div class="job-info-item">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span>${job.salary}</span>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                ${job.skills.map(skill => `<span class="skill-badge">${skill}</span>`).join('')}
+                            </div>
+                            <div class="flex justify-between items-center mt-4">
+                                <span class="text-sm text-gray-400">Posted recently</span>
+                                <button class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg">Apply Now</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Load jobs when page loads
+        document.addEventListener('DOMContentLoaded', fetchRecentJobs);
+    </script>
 </body>
 
 </html>

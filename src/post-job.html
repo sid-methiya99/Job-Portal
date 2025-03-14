@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./output.css" rel="stylesheet">
+    <title>100xJobs - Post a Job</title>
+</head>
+
+<body class="bg-[#0A0A29] text-white min-h-screen">
+    <script>
+        // Check login status when page loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('/auth/check-auth.php');
+                const data = await response.json();
+                
+                if (!data.isLoggedIn) {
+                    // Save current page URL to redirect back after login
+                    sessionStorage.setItem('redirectUrl', window.location.href);
+                    window.location.href = 'login.html';
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                window.location.href = 'login.html';
+            }
+        });
+    </script>
+
+    <!-- Navigation -->
+    <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <span class="text-2xl font-bold">100x<span class="text-purple-600">Jobs</span></span>
+            <a href="index.html" class="text-2xl font-bold">100x<span class="text-purple-600">Jobs</span></a>
+        </div>
+        <div class="flex items-center gap-6">
+            <a href="explore.html" class="hover:text-purple-500">Explore jobs</a>
+            <a href="#" class="hover:text-purple-500">Contact us</a>
+            <button class="bg-gray-700 p-2 rounded-full">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                </svg>
+            </button>
+            <a href="login.html" class="bg-purple-600 px-6 py-2 rounded-full hover:bg-purple-700">Login</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8 max-w-3xl">
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold mb-4">Post a Job</h1>
+            <p class="text-gray-400">Fill in the details below to post your job opening</p>
+        </div>
+
+        <form id="jobPostForm" class="bg-[#1A1A3F] rounded-xl p-8 space-y-6">
+            <!-- Job Details Section -->
+            <div class="space-y-6">
+                <h2 class="text-xl font-semibold border-b border-gray-700 pb-4">Job Details</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Job Title*</label>
+                        <input type="text" name="title" required
+                            class="w-full bg-[#0A0A29] rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Category*</label>
+                        <select name="category" required
+                            class="w-full bg-[#0A0A29] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-600">
+                            <option value="Development">Development</option>
+                            <option value="Design">Design</option>
+                            <option value="Marketing">Marketing</option>
+                            <option value="Sales">Sales</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Employment Type*</label>
+                        <select name="type" required
+                            class="w-full bg-[#0A0A29] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-600">
+                            <option value="Full_time">Full Time</option>
+                            <option value="Part_time">Part Time</option>
+                            <option value="Contract">Contract</option>
+                            <option value="Internship">Internship</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Work Mode*</label>
+                        <select name="workMode" required
+                            class="w-full bg-[#0A0A29] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-600">
+                            <option value="remote">Remote</option>
+                            <option value="hybrid">Hybrid</option>
+                            <option value="office">Office</option>
+                        </select>
+                    </div>
+
+                    <!-- Company Details -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Company Name*</label>
+                        <input type="text" name="companyName" required
+                            class="w-full bg-[#0A0A29] rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Company Email*</label>
+                        <input type="email" name="companyEmail" required
+                            class="w-full bg-[#0A0A29] rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Company Logo URL</label>
+                        <input type="url" name="companyLogo" placeholder="https://logo.clearbit.com/company.com"
+                            class="w-full bg-[#0A0A29] rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Company Bio</label>
+                        <input type="text" name="companyBio" placeholder="Brief description of your company"
+                            class="w-full bg-[#0A0A29] rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-2">Job Description*</label>
+                    <textarea name="description" rows="4" required
+                        class="w-full bg-[#0A0A29] rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600"></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">City*</label>
+                        <input type="text" name="city" required
+                            class="w-full bg-[#0A0A29] rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Address*</label>
+                        <input type="text" name="address" required
+                            class="w-full bg-[#0A0A29] rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Salary Section -->
+            <div class="space-y-6">
+                <h2 class="text-xl font-semibold border-b border-gray-700 pb-4">Salary Range</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Currency*</label>
+                        <select name="currency" required
+                            class="w-full bg-[#0A0A29] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-600">
+                            <option value="INR">INR</option>
+                            <option value="USD">USD</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Minimum Salary*</label>
+                        <input type="number" name="minSalary" required
+                            class="w-full bg-[#0A0A29] rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Maximum Salary*</label>
+                        <input type="number" name="maxSalary" required
+                            class="w-full bg-[#0A0A29] rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Experience Section -->
+            <div class="space-y-6">
+                <h2 class="text-xl font-semibold border-b border-gray-700 pb-4">Experience Required</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Minimum Experience (Years)*</label>
+                        <input type="number" name="minExperience" required
+                            class="w-full bg-[#0A0A29] rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Maximum Experience (Years)*</label>
+                        <input type="number" name="maxExperience" required
+                            class="w-full bg-[#0A0A29] rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skills Section -->
+            <div class="space-y-6">
+                <h2 class="text-xl font-semibold border-b border-gray-700 pb-4">Required Skills</h2>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">Skills (comma separated)*</label>
+                    <input type="text" name="skills" required placeholder="e.g. JavaScript, React, Node.js"
+                        class="w-full bg-[#0A0A29] rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600">
+                </div>
+            </div>
+
+            <div class="pt-6">
+                <button type="submit" 
+                    class="w-full bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium">
+                    Post Job
+                </button>
+            </div>
+        </form>
+    </main>
+
+    <script>
+        document.getElementById('jobPostForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = {
+                ...Object.fromEntries(formData),
+                skills: formData.get('skills').split(',').map(skill => skill.trim()),
+                hasSalaryRange: true,
+                hasExperiencerange: true
+            };
+
+            try {
+                const response = await fetch('/api/jobs/create.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    alert('Job posted successfully!');
+                    window.location.href = 'explore.html';
+                } else {
+                    alert('Failed to post job: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error posting job:', error);
+                alert('Failed to post job. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html> 

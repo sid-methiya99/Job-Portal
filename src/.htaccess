@@ -1,0 +1,15 @@
+RewriteEngine On
+
+# Admin routes
+RewriteRule ^admin/?$ admin/index.html [L]
+RewriteRule ^admin/(.*)$ admin/$1 [L]
+
+# Company routes
+RewriteRule ^companies/?$ companies/dashboard.html [L]
+RewriteRule ^companies/(.*)$ companies/$1 [L]
+
+# API routes
+RewriteRule ^api/(.*)$ api/$1 [L]
+
+# Default route
+RewriteRule ^$ index.html [L] 
