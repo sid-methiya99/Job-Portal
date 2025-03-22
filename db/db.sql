@@ -1,68 +1,59 @@
+CREATE DATABASE IF NOT EXISTS job_board;
+USE job_board;
 
-CREATE TABLE User (
-    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-    name TEXT NOT NULL,
-    password TEXT,
+-- Users table
+CREATE TABLE IF NOT EXISTS Users (
+    id VARCHAR(36) PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('ADMIN', 'HR', 'USER') NOT NULL,
     isVerified BOOLEAN DEFAULT FALSE,
-    role ENUM('USER', 'ADMIN', 'HR') DEFAULT 'USER',
-    email TEXT UNIQUE NOT NULL,
-    emailVerified DATETIME,
-    skills JSON,
-    resume TEXT,
-    createdAt DATETIME DEFAULT NOW(),
-    blockedByAdmin DATETIME,
-    onBoard BOOLEAN DEFAULT FALSE,
-    githubLink TEXT,
-    portfolioLink TEXT,
-    linkedinLink TEXT,
-    twitterLink TEXT,
-    contactEmail TEXT,
-    aboutMe TEXT,
-    resumeUpdateDate DATETIME,
-    companyId CHAR(36) UNIQUE,
-    FOREIGN KEY (companyId) REFERENCES Company(id) ON DELETE SET NULL
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE Company (
-    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-    companyName TEXT NOT NULL,
-    companyLogo TEXT,
-    companyEmail TEXT NOT NULL,
-    companyBio TEXT NOT NULL
+-- Company table
+CREATE TABLE IF NOT EXISTS Company (
+    id VARCHAR(36) PRIMARY KEY,
+    userId VARCHAR(36),
+    companyName VARCHAR(100) NOT NULL,
+    companyEmail VARCHAR(100) NOT NULL,
+    companyBio TEXT,
+    companyWebsite VARCHAR(255),
+    companyLogo VARCHAR(255),
+    isVerified BOOLEAN DEFAULT FALSE,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (userId) REFERENCES Users(id)
 );
 
-CREATE TABLE Job (
-    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-    userId CHAR(36) NOT NULL,
-    title TEXT NOT NULL,
-    description TEXT,
-    companyName TEXT NOT NULL,
-    companyBio TEXT NOT NULL,
-    companyEmail TEXT NOT NULL,
-    category TEXT NOT NULL,
-    type ENUM('Full_time', 'Part_time', 'Internship', 'Contract') NOT NULL,
-    workMode ENUM('remote', 'hybrid', 'office') NOT NULL,
-    currency ENUM('INR', 'USD') DEFAULT 'INR',
-    city TEXT NOT NULL,
-    address TEXT NOT NULL,
-    application TEXT NOT NULL,
-    companyLogo TEXT NOT NULL,
+-- Job table
+CREATE TABLE IF NOT EXISTS Job (
+    id VARCHAR(36) PRIMARY KEY,
+    companyId VARCHAR(36) NOT NULL,
+    title VARCHAR(100) NOT NULL,
+    description TEXT NOT NULL,
+    type ENUM('FULL_TIME', 'PART_TIME', 'CONTRACT', 'INTERNSHIP') NOT NULL,
+    workMode ENUM('REMOTE', 'HYBRID', 'OFFICE') NOT NULL,
+    location VARCHAR(100) NOT NULL,
+    salary_min INT,
+    salary_max INT,
+    experience_min INT,
+    experience_max INT,
     skills JSON,
-    expired BOOLEAN DEFAULT FALSE,
-    hasExpiryDate BOOLEAN DEFAULT FALSE,
-    expiryDate DATETIME,
-    hasSalaryRange BOOLEAN DEFAULT FALSE,
-    minSalary INT,
-    maxSalary INT,
-    hasExperiencerange BOOLEAN DEFAULT FALSE,
-    minExperience INT,
-    maxExperience INT,
-    isVerifiedJob BOOLEAN DEFAULT FALSE,
-    deleted BOOLEAN DEFAULT FALSE,
-    deletedAt DATETIME,
-    postedAt DATETIME DEFAULT NOW(),
-    updatedAt DATETIME DEFAULT NOW() ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE
+    isActive BOOLEAN DEFAULT TRUE,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (companyId) REFERENCES Company(id)
+);
+
+-- Create admin user
+INSERT INTO Users (id, name, email, password, role, isVerified)
+VALUES (
+    UUID(), 
+    'Admin',
+    'admin@100xjobs.com',
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', -- password: password
+    'ADMIN',
+    TRUE
 );
 
 CREATE TABLE Bookmark (
@@ -70,7 +61,7 @@ CREATE TABLE Bookmark (
     jobId CHAR(36) NOT NULL,
     userId CHAR(36) NOT NULL,
     FOREIGN KEY (jobId) REFERENCES Job(id) ON DELETE CASCADE,
-    FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE
+    FOREIGN KEY (userId) REFERENCES Users(id) ON DELETE CASCADE -- Updated reference
 );
 
 CREATE TABLE Experience (
@@ -85,7 +76,7 @@ CREATE TABLE Experience (
     endDate DATETIME,
     description TEXT NOT NULL,
     userId CHAR(36) NOT NULL,
-    FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE
+    FOREIGN KEY (userId) REFERENCES Users(id) ON DELETE CASCADE -- Updated reference
 );
 
 CREATE TABLE Education (
@@ -95,7 +86,5 @@ CREATE TABLE Education (
     startDate DATETIME NOT NULL,
     endDate DATETIME,
     userId CHAR(36) NOT NULL,
-    FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE
+    FOREIGN KEY (userId) REFERENCES Users(id) ON DELETE CASCADE -- Updated reference
 );
-
-
