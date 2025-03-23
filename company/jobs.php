@@ -27,37 +27,60 @@ if (!$companyProfile) {
     exit();
 }
 
-// Handle job actions
-$message = '';
-$messageType = '';
+// Get all jobs for this company with application counts
+$query = "SELECT j.*, 
+          (SELECT COUNT(*) FROM Applications a WHERE a.jobId = j.id) as applicationCount,
+          (SELECT COUNT(*) FROM Applications a WHERE a.jobId = j.id AND a.status = 'PENDING') as pendingCount
+          FROM Job j 
+          WHERE j.companyId = :companyId 
+          AND j.deleted = FALSE 
+          ORDER BY j.createdAt DESC";
+$stmt = $db->prepare($query);
+$stmt->bindParam(":companyId", $companyProfile['id']);
+$stmt->execute();
+$companyJobs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+// Handle job actions
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && isset($_POST['jobId'])) {
     $jobId = $_POST['jobId'];
+    $message = '';
+    $messageType = '';
     
-    switch ($_POST['action']) {
-        case 'delete':
-            if ($job->delete($jobId)) {
-                $message = "Job deleted successfully";
-                $messageType = "success";
-            }
-            break;
-        case 'expire':
-            if ($job->expireJob($jobId)) {
-                $message = "Job marked as expired";
-                $messageType = "success";
-            }
-            break;
-        case 'activate':
-            if ($job->activateJob($jobId)) {
-                $message = "Job activated successfully";
-                $messageType = "success";
-            }
-            break;
+    try {
+        switch ($_POST['action']) {
+            case 'delete':
+                if ($job->delete($jobId)) {
+                    $message = "Job deleted successfully";
+                    $messageType = "success";
+                    // Refresh the jobs list after deletion
+                    $stmt->execute();
+                    $companyJobs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                }
+                break;
+            case 'expire':
+                if ($job->expireJob($jobId)) {
+                    $message = "Job marked as expired";
+                    $messageType = "success";
+                    // Refresh the jobs list
+                    $stmt->execute();
+                    $companyJobs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                }
+                break;
+            case 'activate':
+                if ($job->activateJob($jobId)) {
+                    $message = "Job activated successfully";
+                    $messageType = "success";
+                    // Refresh the jobs list
+                    $stmt->execute();
+                    $companyJobs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                }
+                break;
+        }
+    } catch (Exception $e) {
+        $message = "Error: " . $e->getMessage();
+        $messageType = "error";
     }
 }
-
-// Get all jobs for this company
-$companyJobs = $job->getUserJobs($_SESSION['user_id']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -105,7 +128,7 @@ $companyJobs = $job->getUserJobs($_SESSION['user_id']);
             </div>
         </div>
 
-        <?php if ($message): ?>
+        <?php if (isset($message) && $message): ?>
             <div class="mb-4 p-4 rounded-md <?php echo $messageType === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'; ?>">
                 <?php echo htmlspecialchars($message); ?>
             </div>
@@ -133,13 +156,23 @@ $companyJobs = $job->getUserJobs($_SESSION['user_id']);
                                             <?php echo htmlspecialchars($companyProfile['companyName']); ?>
                                             <span class="mx-2">•</span>
                                             <i class="fas fa-map-marker-alt mr-1.5"></i>
-                                            <?php echo htmlspecialchars($job['city']); ?>
+                                            <?php echo htmlspecialchars($job['location']); ?>
                                             <span class="mx-2">•</span>
                                             <i class="fas fa-clock mr-1.5"></i>
                                             <?php echo htmlspecialchars($job['type']); ?>
                                             <span class="mx-2">•</span>
                                             <i class="fas fa-laptop-house mr-1.5"></i>
                                             <?php echo htmlspecialchars($job['workMode']); ?>
+                                        </div>
+                                        <div class="mt-2">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?php echo $job['applicationCount'] > 0 ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'; ?>">
+                                                <?php echo $job['applicationCount']; ?> Application<?php echo $job['applicationCount'] !== 1 ? 's' : ''; ?>
+                                            </span>
+                                            <?php if ($job['pendingCount'] > 0): ?>
+                                                <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                    <?php echo $job['pendingCount']; ?> Pending
+                                                </span>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                     <div class="ml-4 flex-shrink-0">
@@ -160,20 +193,17 @@ $companyJobs = $job->getUserJobs($_SESSION['user_id']);
                                 </div>
                                 <div class="mt-4 flex justify-between items-center">
                                     <div class="text-sm text-gray-500">
-                                        Posted on <?php echo date('M d, Y', strtotime($job['postedAt'])); ?>
+                                        Posted on <?php echo date('M d, Y', strtotime($job['createdAt'])); ?>
                                         <?php if ($job['expiryDate']): ?>
                                             <span class="mx-2">•</span>
                                             Expires on <?php echo date('M d, Y', strtotime($job['expiryDate'])); ?>
                                         <?php endif; ?>
                                     </div>
                                     <div class="flex space-x-3">
-                                        <a href="edit-job.php?id=<?php echo $job['id']; ?>" 
-                                           class="text-blue-600 hover:text-blue-900">
-                                            <i class="fas fa-edit"></i> Edit
-                                        </a>
+                                        
                                         <a href="view-applications.php?job_id=<?php echo $job['id']; ?>" 
                                            class="text-green-600 hover:text-green-900">
-                                            <i class="fas fa-users"></i> Applications
+                                            <i class="fas fa-users"></i> Applications <?php if ($job['pendingCount'] > 0): ?>(<?php echo $job['pendingCount']; ?>)<?php endif; ?>
                                         </a>
                                         <form action="jobs.php" method="POST" class="inline">
                                             <input type="hidden" name="jobId" value="<?php echo $job['id']; ?>">
@@ -189,11 +219,10 @@ $companyJobs = $job->getUserJobs($_SESSION['user_id']);
                                                 </button>
                                             <?php endif; ?>
                                         </form>
-                                        <form action="jobs.php" method="POST" class="inline">
+                                        <form action="jobs.php" method="POST" class="inline" onsubmit="return handleDelete(this);">
                                             <input type="hidden" name="jobId" value="<?php echo $job['id']; ?>">
                                             <button type="submit" name="action" value="delete" 
-                                                class="text-red-600 hover:text-red-900 bg-transparent border-none p-0"
-                                                onclick="return confirm('Are you sure you want to delete this job? This action cannot be undone.')">
+                                                class="text-red-600 hover:text-red-900 bg-transparent border-none p-0">
                                                 <i class="fas fa-trash"></i> Delete
                                             </button>
                                         </form>
@@ -206,5 +235,21 @@ $companyJobs = $job->getUserJobs($_SESSION['user_id']);
             <?php endif; ?>
         </div>
     </div>
+
+    <script>
+    function handleDelete(form) {
+        if (confirm('Are you sure you want to delete this job? This action cannot be undone.')) {
+            const jobElement = form.closest('li');
+            jobElement.style.transition = 'all 0.5s ease';
+            jobElement.style.opacity = '0';
+            jobElement.style.transform = 'translateX(-100%)';
+            
+            setTimeout(() => {
+                form.submit();
+            }, 500);
+        }
+        return false;
+    }
+    </script>
 </body>
 </html> 

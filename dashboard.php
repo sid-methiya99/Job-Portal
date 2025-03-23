@@ -35,7 +35,6 @@ $userData = $user->getUser($_SESSION['user_id']);
                     <div class="ml-10 flex items-baseline space-x-4">
                         <a href="/" class="text-gray-600 hover:text-blue-600 px-3 py-2">Home</a>
                         <a href="jobs.php" class="text-gray-600 hover:text-blue-600 px-3 py-2">Jobs</a>
-                        <a href="bookmarks.php" class="text-gray-600 hover:text-blue-600 px-3 py-2">Bookmarks</a>
                         <a href="profile.php" class="text-gray-600 hover:text-blue-600 px-3 py-2">Profile</a>
                         <a href="auth/logout.php" class="text-gray-600 hover:text-blue-600 px-3 py-2">Logout</a>
                     </div>
@@ -140,24 +139,27 @@ $userData = $user->getUser($_SESSION['user_id']);
     </div>
 
     <script>
-    // Add JavaScript for dynamic job loading here
     document.addEventListener('DOMContentLoaded', function() {
+        const jobsContainer = document.querySelector('.grid.gap-5');
         // Load recent jobs via AJAX
         fetch('api/jobs.php?limit=6')
             .then(response => response.json())
-            .then(data => {
-                const jobsContainer = document.querySelector('.grid.gap-5');
-                if (data.length === 0) {
+            .then(result => {
+                if (result.status === 'error') {
+                    throw new Error(result.message);
+                }
+                const jobs = result.data.jobs;
+                if (jobs.length === 0) {
                     jobsContainer.innerHTML = '<p class="text-gray-500 text-center col-span-3">No jobs found</p>';
                     return;
                 }
                 
-                jobsContainer.innerHTML = data.map(job => `
+                jobsContainer.innerHTML = jobs.map(job => `
                     <div class="bg-white overflow-hidden shadow rounded-lg">
                         <div class="p-6">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 h-10 w-10">
-                                    <img class="h-10 w-10 rounded-full" src="${job.companyLogo}" alt="${job.companyName}">
+                                    <img class="h-10 w-10 rounded-full" src="${job.companyLogo || 'assets/images/company-placeholder.png'}" alt="${job.companyName}" onerror="this.src='assets/images/company-placeholder.png'">
                                 </div>
                                 <div class="ml-4">
                                     <h3 class="text-lg font-medium text-gray-900">${job.title}</h3>
@@ -165,7 +167,7 @@ $userData = $user->getUser($_SESSION['user_id']);
                                 </div>
                             </div>
                             <div class="mt-4">
-                                <p class="text-sm text-gray-500">${job.description.substring(0, 100)}...</p>
+                                <p class="text-sm text-gray-500">${job.description ? job.description.substring(0, 100) + '...' : 'No description available'}</p>
                             </div>
                             <div class="mt-4">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
@@ -184,8 +186,7 @@ $userData = $user->getUser($_SESSION['user_id']);
             })
             .catch(error => {
                 console.error('Error:', error);
-                const jobsContainer = document.querySelector('.grid.gap-5');
-                jobsContainer.innerHTML = '<p class="text-red-500 text-center col-span-3">Error loading jobs</p>';
+                jobsContainer.innerHTML = '<p class="text-red-500 text-center col-span-3">Error loading jobs: ' + error.message + '</p>';
             });
     });
     </script>

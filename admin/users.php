@@ -32,12 +32,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $targetUserId = $_POST['userId'];
         
         switch ($_POST['action']) {
-            case 'verify':
-                if ($user->verifyUser($targetUserId)) {
-                    $message = "User verified successfully";
-                    $messageType = "success";
-                }
-                break;
             case 'block':
                 if ($user->blockUser($targetUserId)) {
                     $message = "User blocked successfully";
@@ -75,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-between items-center h-16">
                 <div class="flex-shrink-0">
-                    <a href="/" class="text-2xl font-bold text-blue-600">Job Portal</a>
+                    <a href="dashboard.php" class="text-2xl font-bold text-blue-600">Job Portal</a>
                 </div>
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-4">
@@ -150,14 +144,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full <?php echo $userData['isVerified'] ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'; ?>">
-                                            <?php echo $userData['isVerified'] ? 'Verified' : 'Pending'; ?>
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Active
                                         </span>
-                                        <?php if ($userData['blockedByAdmin']): ?>
-                                            <span class="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                                Blocked
-                                            </span>
-                                        <?php endif; ?>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         <?php echo date('M d, Y', strtotime($userData['createdAt'])); ?>
@@ -165,20 +154,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <form action="users.php" method="POST" class="inline">
                                             <input type="hidden" name="userId" value="<?php echo $userData['id']; ?>">
-                                            <?php if (!$userData['isVerified']): ?>
-                                                <button type="submit" name="action" value="verify" class="text-blue-600 hover:text-blue-900 mr-2">
-                                                    Verify
-                                                </button>
-                                            <?php endif; ?>
-                                            <?php if (!$userData['blockedByAdmin']): ?>
-                                                <button type="submit" name="action" value="block" class="text-red-600 hover:text-red-900 mr-2">
-                                                    Block
-                                                </button>
-                                            <?php else: ?>
-                                                <button type="submit" name="action" value="unblock" class="text-green-600 hover:text-green-900 mr-2">
-                                                    Unblock
-                                                </button>
-                                            <?php endif; ?>
                                             <button type="submit" name="action" value="delete" 
                                                 class="text-red-600 hover:text-red-900"
                                                 onclick="return confirm('Are you sure you want to delete this user? This action cannot be undone.')">

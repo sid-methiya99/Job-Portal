@@ -8,7 +8,6 @@ class User {
     public $email;
     public $password;
     public $role;
-    public $isVerified;
     public $createdAt;
 
     public function __construct($db) {
@@ -131,7 +130,6 @@ class User {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // New methods for admin functionality
     public function getAllUsers() {
         if (!$this->conn) {
             throw new Exception("Database connection not established");
@@ -160,81 +158,6 @@ class User {
         
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result['total'];
-    }
-
-    public function getPendingVerifications() {
-        if (!$this->conn) {
-            throw new Exception("Database connection not established");
-        }
-
-        $query = "SELECT COUNT(*) as total FROM " . $this->table . " 
-                WHERE role = 'HR' AND isVerified = FALSE";
-        
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute();
-        
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result['total'];
-    }
-
-    public function getActiveJobs() {
-        if (!$this->conn) {
-            throw new Exception("Database connection not established");
-        }
-
-        $query = "SELECT COUNT(*) as total FROM Job 
-                WHERE expired = FALSE AND deleted = FALSE";
-        
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute();
-        
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result['total'];
-    }
-
-    public function verifyUser($userId) {
-        if (!$this->conn) {
-            throw new Exception("Database connection not established");
-        }
-
-        $query = "UPDATE " . $this->table . "
-                SET isVerified = TRUE
-                WHERE id = :id AND role = 'HR'";
-
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":id", $userId);
-        
-        return $stmt->execute();
-    }
-
-    public function blockUser($userId) {
-        if (!$this->conn) {
-            throw new Exception("Database connection not established");
-        }
-
-        $query = "UPDATE " . $this->table . "
-                SET blockedByAdmin = TRUE
-                WHERE id = :id AND role != 'ADMIN'";
-
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":id", $userId);
-        
-        return $stmt->execute();
-    }
-
-    public function unblockUser($userId) {
-        if (!$this->conn) {
-            throw new Exception("Database connection not established");
-        }
-
-        $query = "UPDATE " . $this->table . "
-                SET blockedByAdmin = FALSE
-                WHERE id = :id AND role != 'ADMIN'";
-
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":id", $userId);
-        
-        return $stmt->execute();
     }
 
     public function getAllUsersWithPagination($limit, $offset) {
@@ -319,52 +242,93 @@ class User {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getBlockedUsers() {
-        if (!$this->conn) {
-            throw new Exception("Database connection not established");
-        }
-
-        $query = "SELECT * FROM " . $this->table . "
-                WHERE blockedByAdmin = TRUE
-                ORDER BY createdAt DESC";
-        
+    public function getUserStats() {
+        $query = "SELECT 
+                    SUM(CASE WHEN role = 'USER' THEN 1 ELSE 0 END) as jobSeekers,
+                    SUM(CASE WHEN role = 'HR' THEN 1 ELSE 0 END) as hrManagers
+                 FROM " . $this->table . " 
+                 WHERE role != 'ADMIN'";
+                 
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
+        $stats = $stmt->fetch(PDO::FETCH_ASSOC);
         
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        // Convert null values to 0
+        $stats['jobSeekers'] = (int)$stats['jobSeekers'];
+        $stats['hrManagers'] = (int)$stats['hrManagers'];
+        
+        return $stats;
     }
 
-    public function getUserStats() {
-        if (!$this->conn) {
-            throw new Exception("Database connection not established");
+    public function verifyUser($userId) {
+        try {
+            $this->conn->beginTransaction();
+
+            // Update user verification status
+            $query = "UPDATE " . $this->table . " SET isVerified = TRUE WHERE id = :id AND role = 'HR'";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(":id", $userId);
+            $stmt->execute();
+
+            // Update company verification status
+            $query = "UPDATE Company SET isVerified = TRUE WHERE userId = :userId";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(":userId", $userId);
+            $stmt->execute();
+
+            // Also verify all jobs from this company
+            $query = "UPDATE Job j 
+                     JOIN Company c ON j.companyId = c.id 
+                     SET j.isVerifiedJob = TRUE 
+                     WHERE c.userId = :userId";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(":userId", $userId);
+            $stmt->execute();
+
+            $this->conn->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->conn->rollBack();
+            throw $e;
         }
+    }
 
-        $stats = array();
-
-        // Total users by role
-        $query = "SELECT role, COUNT(*) as count FROM " . $this->table . "
-                WHERE role != 'ADMIN'
-                GROUP BY role";
+    public function blockUser($userId) {
+        $query = "UPDATE " . $this->table . " SET blockedByAdmin = TRUE WHERE id = :id AND role != 'ADMIN'";
         $stmt = $this->conn->prepare($query);
-        $stmt->execute();
-        $stats['usersByRole'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt->bindParam(":id", $userId);
+        return $stmt->execute();
+    }
 
-        // Users registered in last 7 days
-        $query = "SELECT COUNT(*) as count FROM " . $this->table . "
-                WHERE createdAt >= DATE_SUB(NOW(), INTERVAL 7 DAY)
-                AND role != 'ADMIN'";
+    public function unblockUser($userId) {
+        $query = "UPDATE " . $this->table . " SET blockedByAdmin = FALSE WHERE id = :id AND role != 'ADMIN'";
         $stmt = $this->conn->prepare($query);
-        $stmt->execute();
-        $stats['newUsersLastWeek'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+        $stmt->bindParam(":id", $userId);
+        return $stmt->execute();
+    }
 
-        // Blocked users count
-        $query = "SELECT COUNT(*) as count FROM " . $this->table . "
-                WHERE blockedByAdmin = TRUE";
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute();
-        $stats['blockedUsers'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+    public function unverifyUser($userId) {
+        try {
+            $this->conn->beginTransaction();
 
-        return $stats;
+            // Update user verification status
+            $query = "UPDATE " . $this->table . " SET isVerified = FALSE WHERE id = :id AND role = 'HR'";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(":id", $userId);
+            $stmt->execute();
+
+            // Update company verification status
+            $query = "UPDATE Company SET isVerified = FALSE WHERE userId = :userId";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(":userId", $userId);
+            $stmt->execute();
+
+            $this->conn->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->conn->rollBack();
+            throw $e;
+        }
     }
 }
 ?> 

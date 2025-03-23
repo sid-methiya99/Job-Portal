@@ -19,9 +19,9 @@ $limit = 15;
 $offset = ($page - 1) * $limit;
 
 // Get jobs with pagination
-$jobs = $job->getAllJobsWithPagination($limit, $offset);
-$totalJobs = $job->getTotalJobs();
-$totalPages = ceil($totalJobs / $limit);
+$jobsData = $job->getAllJobsWithPagination($limit, $offset);
+$jobs = $jobsData['jobs'];
+$totalPages = $jobsData['totalPages'];
 
 // Handle job actions
 $message = '';
@@ -38,12 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $messageType = "success";
                 }
                 break;
-            case 'expire':
-                if ($job->expireJob($targetJobId)) {
-                    $message = "Job marked as expired";
-                    $messageType = "success";
-                }
-                break;
+           
             case 'activate':
                 if ($job->activateJob($targetJobId)) {
                     $message = "Job activated successfully";
@@ -75,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-between items-center h-16">
                 <div class="flex-shrink-0">
-                    <a href="/" class="text-2xl font-bold text-blue-600">Job Portal</a>
+                    <a href="dashboard.php" class="text-2xl font-bold text-blue-600">Job Portal</a>
                 </div>
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-4">
@@ -165,7 +160,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <?php endif; ?>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        <?php echo date('M d, Y', strtotime($jobData['postedAt'])); ?>
+                                        <?php echo date('M d, Y', strtotime($jobData['createdAt'])); ?>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <form action="jobs.php" method="POST" class="inline">
@@ -175,15 +170,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                     Verify
                                                 </button>
                                             <?php endif; ?>
-                                            <?php if (!$jobData['expired']): ?>
-                                                <button type="submit" name="action" value="expire" class="text-yellow-600 hover:text-yellow-900 mr-2">
-                                                    Expire
-                                                </button>
-                                            <?php else: ?>
-                                                <button type="submit" name="action" value="activate" class="text-green-600 hover:text-green-900 mr-2">
-                                                    Activate
-                                                </button>
-                                            <?php endif; ?>
+                                        
                                             <button type="submit" name="action" value="delete" 
                                                 class="text-red-600 hover:text-red-900"
                                                 onclick="return confirm('Are you sure you want to delete this job? This action cannot be undone.')">

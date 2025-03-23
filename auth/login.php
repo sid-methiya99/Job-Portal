@@ -8,9 +8,11 @@ $db = $database->getConnection();
 $user = new User($db);
 
 $message = '';
+$messageType = '';
 
 if (isset($_SESSION['success_message'])) {
     $message = $_SESSION['success_message'];
+    $messageType = 'success';
     unset($_SESSION['success_message']);
 }
 
@@ -22,8 +24,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $row = $result->fetch(PDO::FETCH_ASSOC);
 
     if ($row && password_verify($password, $row['password'])) {
-        if (!$row['isVerified'] && $row['role'] === 'HR') {
-            $message = "Your account is pending verification by admin.";
+        if ($row['role'] === 'HR' && !$row['isVerified']) {
+            $message = "Your account is pending verification by admin. Please wait for approval.";
+            $messageType = 'error';
         } else {
             $_SESSION['user_id'] = $row['id'];
             $_SESSION['user_name'] = $row['name'];
@@ -40,6 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     } else {
         $message = "Invalid email or password";
+        $messageType = 'error';
     }
 }
 ?>
@@ -66,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </p>
             </div>
             <?php if ($message): ?>
-                <div class="<?php echo strpos($message, 'successful') !== false ? 'bg-green-100 border-green-400 text-green-700' : 'bg-red-100 border-red-400 text-red-700'; ?> px-4 py-3 rounded relative border" role="alert">
+                <div class="<?php echo $messageType === 'success' ? 'bg-green-100 border-green-400 text-green-700' : 'bg-red-100 border-red-400 text-red-700'; ?> px-4 py-3 rounded relative border" role="alert">
                     <span class="block sm:inline"><?php echo $message; ?></span>
                 </div>
             <?php endif; ?>

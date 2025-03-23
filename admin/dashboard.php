@@ -2,6 +2,7 @@
 session_start();
 require_once '../config/database.php';
 require_once '../classes/User.php';
+require_once '../classes/Job.php';
 
 // Check if user is logged in and is an admin
 if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'ADMIN') {
@@ -12,6 +13,10 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'ADMIN') {
 $database = new Database();
 $db = $database->getConnection();
 $user = new User($db);
+$job = new Job($db);
+
+// Get user statistics
+$stats = $user->getUserStats();
 
 // Get all users except admin
 $users = $user->getAllUsers();
@@ -62,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-between items-center h-16">
                 <div class="flex-shrink-0">
-                    <a href="/" class="text-2xl font-bold text-blue-600">Job Portal</a>
+                    <a href="dashboard.php" class="text-2xl font-bold text-blue-600">Job Portal</a>
                 </div>
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-4">
@@ -78,10 +83,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <!-- Welcome Section -->
+        <!-- Page Header -->
         <div class="px-4 py-6 sm:px-0">
-            <h1 class="text-3xl font-bold text-gray-900">Welcome, Admin!</h1>
-            <p class="mt-2 text-gray-600">Manage users, jobs, and system settings.</p>
+            <h1 class="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+            <p class="mt-2 text-gray-600">Overview of the job portal system.</p>
         </div>
 
         <?php if ($message): ?>
@@ -90,67 +95,108 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         <?php endif; ?>
 
-        <!-- Stats Section -->
-        <div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            <!-- Total Users -->
-            <div class="bg-white overflow-hidden shadow rounded-lg">
-                <div class="p-5">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-users text-blue-600 text-3xl"></i>
+        <!-- Stats Grid -->
+        <div class="mt-8">
+            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                <!-- Job Seekers Card -->
+                <div class="bg-white overflow-hidden shadow rounded-lg">
+                    <div class="p-5">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-users text-blue-600 text-3xl"></i>
+                            </div>
+                            <div class="ml-5 w-0 flex-1">
+                                <dl>
+                                    <dt class="text-sm font-medium text-gray-500 truncate">
+                                        Job Seekers
+                                    </dt>
+                                    <dd class="flex items-baseline">
+                                        <div class="text-2xl font-semibold text-gray-900">
+                                            <?php echo $stats['jobSeekers']; ?>
+                                        </div>
+                                    </dd>
+                                </dl>
+                            </div>
                         </div>
-                        <div class="ml-5 w-0 flex-1">
-                            <dl>
-                                <dt class="text-sm font-medium text-gray-500 truncate">
-                                    Total Users
-                                </dt>
-                                <dd class="text-3xl font-semibold text-gray-900">
-                                    <?php echo $user->getTotalUsers(); ?>
-                                </dd>
-                            </dl>
+                    </div>
+                    <div class="bg-gray-50 px-5 py-3">
+                        <div class="text-sm">
+                            <a href="users.php?role=USER" class="font-medium text-blue-600 hover:text-blue-900">
+                                View all job seekers <span aria-hidden="true">&rarr;</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HR Managers Card -->
+                <div class="bg-white overflow-hidden shadow rounded-lg">
+                    <div class="p-5">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-building text-purple-600 text-3xl"></i>
+                            </div>
+                            <div class="ml-5 w-0 flex-1">
+                                <dl>
+                                    <dt class="text-sm font-medium text-gray-500 truncate">
+                                        HR Managers
+                                    </dt>
+                                    <dd class="flex items-baseline">
+                                        <div class="text-2xl font-semibold text-gray-900">
+                                            <?php echo $stats['hrManagers']; ?>
+                                        </div>
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-5 py-3">
+                        <div class="text-sm">
+                            <a href="users.php?role=HR" class="font-medium text-blue-600 hover:text-blue-900">
+                                View all HR managers <span aria-hidden="true">&rarr;</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Jobs Card -->
+                <div class="bg-white overflow-hidden shadow rounded-lg">
+                    <div class="p-5">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-briefcase text-green-600 text-3xl"></i>
+                            </div>
+                            <div class="ml-5 w-0 flex-1">
+                                <dl>
+                                    <dt class="text-sm font-medium text-gray-500 truncate">
+                                        Active Jobs
+                                    </dt>
+                                    <dd class="flex items-baseline">
+                                        <div class="text-2xl font-semibold text-gray-900">
+                                            <?php echo $job->getTotalJobs(); ?>
+                                        </div>
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-5 py-3">
+                        <div class="text-sm">
+                            <a href="jobs.php" class="font-medium text-blue-600 hover:text-blue-900">
+                                View all jobs <span aria-hidden="true">&rarr;</span>
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Pending Verifications -->
-            <div class="bg-white overflow-hidden shadow rounded-lg">
-                <div class="p-5">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-clock text-yellow-600 text-3xl"></i>
-                        </div>
-                        <div class="ml-5 w-0 flex-1">
-                            <dl>
-                                <dt class="text-sm font-medium text-gray-500 truncate">
-                                    Pending Verifications
-                                </dt>
-                                <dd class="text-3xl font-semibold text-gray-900">
-                                    <?php echo $user->getPendingVerifications(); ?>
-                                </dd>
-                            </dl>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Active Jobs -->
-            <div class="bg-white overflow-hidden shadow rounded-lg">
-                <div class="p-5">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-briefcase text-green-600 text-3xl"></i>
-                        </div>
-                        <div class="ml-5 w-0 flex-1">
-                            <dl>
-                                <dt class="text-sm font-medium text-gray-500 truncate">
-                                    Active Jobs
-                                </dt>
-                                <dd class="text-3xl font-semibold text-gray-900">
-                                    <?php echo $user->getActiveJobs(); ?>
-                                </dd>
-                            </dl>
-                        </div>
+        <!-- Recent Activity -->
+        <div class="mt-8">
+            <div class="bg-white shadow rounded-lg">
+                <div class="px-4 py-5 sm:p-6">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">Recent Activity</h3>
+                    <div class="mt-4">
+                        <!-- Add recent activity content here if needed -->
                     </div>
                 </div>
             </div>
@@ -205,14 +251,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full <?php echo $userData['isVerified'] ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'; ?>">
-                                                <?php echo $userData['isVerified'] ? 'Verified' : 'Pending'; ?>
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full <?php 
+                                                if ($userData['role'] === 'HR') {
+                                                    echo $userData['isVerified'] ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
+                                                } else {
+                                                    echo 'bg-green-100 text-green-800';
+                                                } ?>">
+                                                <?php 
+                                                if ($userData['role'] === 'HR') {
+                                                    echo $userData['isVerified'] ? 'Verified' : 'Pending';
+                                                } else {
+                                                    echo 'Active';
+                                                }
+                                                ?>
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <form action="dashboard.php" method="POST" class="inline">
                                                 <input type="hidden" name="userId" value="<?php echo $userData['id']; ?>">
-                                                <?php if (!$userData['isVerified']): ?>
+                                                <?php if (!$userData['isVerified'] && $userData['role'] === 'HR'): ?>
                                                     <button type="submit" name="action" value="verify" class="text-blue-600 hover:text-blue-900 mr-2">
                                                         Verify
                                                     </button>
