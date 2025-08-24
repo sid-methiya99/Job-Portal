@@ -7,7 +7,7 @@ services:
     ports:
       - "8080:80"
     volumes:
-      # Windows-compatible volume mounting
+      # Mount source code for development (excluding uploads)
       - type: bind
         source: .
         target: /var/www/html
@@ -16,9 +16,11 @@ services:
         source: ./docker/apache.conf
         target: /etc/apache2/sites-available/000-default.conf
         read_only: true
+      # Mount uploads directory with proper permissions
       - type: bind
         source: ./uploads
         target: /var/www/html/uploads
+        consistency: cached
     depends_on:
       - db
     environment:
@@ -28,9 +30,6 @@ services:
       - DB_PASSWORD=jobportal123
     networks:
       - job-portal-network
-    # Windows-specific settings
-    stdin_open: true
-    tty: true
 
   # MySQL Database
   db:
@@ -50,7 +49,6 @@ services:
         read_only: true
     networks:
       - job-portal-network
-    # Windows-specific settings
     command: --default-authentication-plugin=mysql_native_password
 
   # phpMyAdmin for easy database management

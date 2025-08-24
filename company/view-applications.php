@@ -21,9 +21,9 @@ $db = $database->getConnection();
 $jobId = $_GET['job_id'];
 
 // Get job details and verify ownership
-$query = "SELECT j.*, c.companyName 
-          FROM Job j 
-          JOIN Company c ON j.companyId = c.id 
+$query = "SELECT j.*, c.companyName
+          FROM Job j
+          JOIN Company c ON j.companyId = c.id
           WHERE j.id = :jobId AND c.userId = :userId";
 $stmt = $db->prepare($query);
 $stmt->bindParam(":jobId", $jobId);
@@ -37,12 +37,12 @@ if (!$job) {
 }
 
 // Get applications for this job
-$query = "SELECT a.*, u.name as applicantName, u.email as applicantEmail, u.resume as profileResume 
+$query = "SELECT a.*, u.name as applicantName, u.email as applicantEmail, u.resume as profileResume
           FROM Applications a
           JOIN Users u ON a.userId = u.id
           WHERE a.jobId = :jobId
-          ORDER BY 
-            CASE a.status 
+          ORDER BY
+            CASE a.status
                 WHEN 'PENDING' THEN 1
                 WHEN 'SHORTLISTED' THEN 2
                 WHEN 'HIRED' THEN 3
@@ -146,8 +146,8 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                 <?php echo date('M d, Y', strtotime($application['createdAt'])); ?>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                    <?php 
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                                    <?php
                                                     switch($application['status']) {
                                                         case 'PENDING':
                                                             echo 'bg-yellow-100 text-yellow-800';
@@ -168,7 +168,7 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                 <?php if ($application['resume']): ?>
-                                                    <a href="../<?php echo htmlspecialchars($application['resume']); ?>" 
+                                                    <a href="../<?php echo htmlspecialchars($application['resume']); ?>"
                                                        target="_blank"
                                                        class="text-blue-600 hover:text-blue-900">
                                                         <i class="fas fa-file-alt mr-1"></i> Application Resume
@@ -178,7 +178,7 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                     <?php if ($application['resume']): ?>
                                                         <span class="mx-2">|</span>
                                                     <?php endif; ?>
-                                                    <a href="../<?php echo htmlspecialchars($application['profileResume']); ?>" 
+                                                    <a href="../<?php echo htmlspecialchars($application['profileResume']); ?>"
                                                        target="_blank"
                                                        class="text-blue-600 hover:text-blue-900">
                                                         <i class="fas fa-file-alt mr-1"></i> Profile Resume
@@ -187,26 +187,26 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 <?php if ($application['status'] === 'PENDING'): ?>
-                                                    <a href="update-status.php?id=<?php echo $application['id']; ?>&action=shortlist&job_id=<?php echo $jobId; ?>" 
+                                                    <a href="update-status.php?id=<?php echo $application['id']; ?>&action=shortlist&job_id=<?php echo $jobId; ?>"
                                                        class="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mr-2">
                                                         <i class="fas fa-user-check mr-1"></i> Shortlist
                                                     </a>
                                                 <?php elseif ($application['status'] === 'SHORTLISTED'): ?>
-                                                    <a href="update-status.php?id=<?php echo $application['id']; ?>&action=hire&job_id=<?php echo $jobId; ?>" 
+                                                    <a href="update-status.php?id=<?php echo $application['id']; ?>&action=hire&job_id=<?php echo $jobId; ?>"
                                                        class="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 mr-2">
                                                         <i class="fas fa-check-circle mr-1"></i> Hire
                                                     </a>
                                                 <?php endif; ?>
-                                                
+
                                                 <?php if ($application['status'] !== 'HIRED' && $application['status'] !== 'REJECTED'): ?>
-                                                    <a href="update-status.php?id=<?php echo $application['id']; ?>&action=reject&job_id=<?php echo $jobId; ?>" 
+                                                    <a href="update-status.php?id=<?php echo $application['id']; ?>&action=reject&job_id=<?php echo $jobId; ?>"
                                                        class="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 mr-2"
                                                        onclick="return confirm('Are you sure you want to reject this application?')">
                                                         <i class="fas fa-times-circle mr-1"></i> Reject
                                                     </a>
                                                 <?php endif; ?>
-                                                
-                                                <a href="mailto:<?php echo htmlspecialchars($application['applicantEmail']); ?>" 
+
+                                                <a href="mailto:<?php echo htmlspecialchars($application['applicantEmail']); ?>"
                                                    class="inline-flex items-center px-3 py-1 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                                     <i class="fas fa-envelope mr-1"></i> Contact
                                                 </a>
@@ -228,7 +228,7 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $applicationId = $_POST['applicationId'];
         $action = $_POST['action'];
         $newStatus = '';
-        
+
         switch($action) {
             case 'shortlist':
                 $newStatus = 'SHORTLISTED';
@@ -240,14 +240,14 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 $newStatus = 'REJECTED';
                 break;
         }
-        
+
         if ($newStatus) {
             $updateQuery = "UPDATE Applications SET status = :status WHERE id = :id AND jobId = :jobId";
             $stmt = $db->prepare($updateQuery);
             $stmt->bindParam(':status', $newStatus);
             $stmt->bindParam(':id', $applicationId);
             $stmt->bindParam(':jobId', $jobId);
-            
+
             if ($stmt->execute()) {
                 header("Location: view-applications.php?job_id=" . $jobId);
                 exit();
@@ -256,4 +256,4 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     ?>
 </body>
-</html> 
+</html>

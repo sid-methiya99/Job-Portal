@@ -28,12 +28,12 @@ if (!$companyProfile) {
 }
 
 // Get all jobs for this company with application counts
-$query = "SELECT j.*, 
+$query = "SELECT j.*,
           (SELECT COUNT(*) FROM Applications a WHERE a.jobId = j.id) as applicationCount,
           (SELECT COUNT(*) FROM Applications a WHERE a.jobId = j.id AND a.status = 'PENDING') as pendingCount
-          FROM Job j 
-          WHERE j.companyId = :companyId 
-          AND j.deleted = FALSE 
+          FROM Job j
+          WHERE j.companyId = :companyId
+          AND j.deleted = FALSE
           ORDER BY j.createdAt DESC";
 $stmt = $db->prepare($query);
 $stmt->bindParam(":companyId", $companyProfile['id']);
@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && isset($_
     $jobId = $_POST['jobId'];
     $message = '';
     $messageType = '';
-    
+
     try {
         switch ($_POST['action']) {
             case 'delete':
@@ -138,7 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && isset($_
         <div class="mt-4 bg-white shadow overflow-hidden sm:rounded-md">
             <?php if (empty($companyJobs)): ?>
                 <div class="p-4 text-center text-gray-500">
-                    No jobs posted yet. 
+                    No jobs posted yet.
                     <a href="post-job.php" class="text-blue-600 hover:text-blue-800">Post your first job</a>
                 </div>
             <?php else: ?>
@@ -200,20 +200,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && isset($_
                                         <?php endif; ?>
                                     </div>
                                     <div class="flex space-x-3">
-                                        
-                                        <a href="view-applications.php?job_id=<?php echo $job['id']; ?>" 
+
+                                        <a href="view-applications.php?job_id=<?php echo $job['id']; ?>"
                                            class="text-green-600 hover:text-green-900">
                                             <i class="fas fa-users"></i> Applications <?php if ($job['pendingCount'] > 0): ?>(<?php echo $job['pendingCount']; ?>)<?php endif; ?>
                                         </a>
                                         <form action="jobs.php" method="POST" class="inline">
                                             <input type="hidden" name="jobId" value="<?php echo $job['id']; ?>">
                                             <?php if (!$job['expired']): ?>
-                                                <button type="submit" name="action" value="expire" 
+                                                <button type="submit" name="action" value="expire"
                                                     class="text-yellow-600 hover:text-yellow-900 bg-transparent border-none p-0">
                                                     <i class="fas fa-clock"></i> Expire
                                                 </button>
                                             <?php else: ?>
-                                                <button type="submit" name="action" value="activate" 
+                                                <button type="submit" name="action" value="activate"
                                                     class="text-green-600 hover:text-green-900 bg-transparent border-none p-0">
                                                     <i class="fas fa-check"></i> Activate
                                                 </button>
@@ -221,7 +221,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && isset($_
                                         </form>
                                         <form action="jobs.php" method="POST" class="inline" onsubmit="return handleDelete(this);">
                                             <input type="hidden" name="jobId" value="<?php echo $job['id']; ?>">
-                                            <button type="submit" name="action" value="delete" 
+                                            <button type="submit" name="action" value="delete"
                                                 class="text-red-600 hover:text-red-900 bg-transparent border-none p-0">
                                                 <i class="fas fa-trash"></i> Delete
                                             </button>
@@ -243,7 +243,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && isset($_
             jobElement.style.transition = 'all 0.5s ease';
             jobElement.style.opacity = '0';
             jobElement.style.transform = 'translateX(-100%)';
-            
+
             setTimeout(() => {
                 form.submit();
             }, 500);
@@ -252,4 +252,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && isset($_
     }
     </script>
 </body>
-</html> 
+</html>

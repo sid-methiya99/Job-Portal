@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (isset($_FILES['companyLogo']) && $_FILES['companyLogo']['error'] === UPLOAD_ERR_OK) {
             $fileInfo = pathinfo($_FILES['companyLogo']['name']);
             $extension = strtolower($fileInfo['extension']);
-            
+
             // Validate file type
             $allowedTypes = ['jpg', 'jpeg', 'png'];
             if (!in_array($extension, $allowedTypes)) {
@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Generate unique filename
             $logoPath = $uploadDir . uniqid('company_') . '.' . $extension;
-            
+
             // Move uploaded file
             if (!move_uploaded_file($_FILES['companyLogo']['tmp_name'], $logoPath)) {
                 throw new Exception("Failed to upload company logo.");
@@ -58,17 +58,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($companyProfile) {
             // Update existing profile
-            $query = "UPDATE Company SET 
-                    companyName = :companyName,
-                    companyEmail = :companyEmail,
-                    companyBio = :companyBio,
-                    companyWebsite = :companyWebsite" .
-                    ($logoPath ? ", companyLogo = :companyLogo" : "") .
-                    " WHERE userId = :userId";
+            if ($logoPath) {
+                $query = "UPDATE Company SET
+                        companyName = :companyName,
+                        companyEmail = :companyEmail,
+                        companyBio = :companyBio,
+                        companyWebsite = :companyWebsite,
+                        companyLogo = :companyLogo
+                        WHERE userId = :userId";
+            } else {
+                $query = "UPDATE Company SET
+                        companyName = :companyName,
+                        companyEmail = :companyEmail,
+                        companyBio = :companyBio,
+                        companyWebsite = :companyWebsite
+                        WHERE userId = :userId";
+            }
         } else {
-            // Create new profile
-            $query = "INSERT INTO Company (id, userId, companyName, companyEmail, companyBio, companyWebsite, companyLogo)
-                    VALUES (UUID(), :userId, :companyName, :companyEmail, :companyBio, :companyWebsite, :companyLogo)";
+            // Create new profile - automatically verified
+            $query = "INSERT INTO Company (id, userId, companyName, companyEmail, companyBio, companyWebsite, companyLogo, isVerified)
+                    VALUES (UUID(), :userId, :companyName, :companyEmail, :companyBio, :companyWebsite, :companyLogo, TRUE)";
         }
 
         $stmt = $db->prepare($query);
@@ -84,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($stmt->execute()) {
             $message = "Company profile " . ($companyProfile ? "updated" : "created") . " successfully!";
             $messageType = "success";
-            
+
             // Refresh company profile data
             $stmt = $db->prepare("SELECT * FROM Company WHERE userId = :userId LIMIT 1");
             $stmt->bindParam(":userId", $_SESSION['user_id']);
@@ -151,8 +160,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <label class="block text-gray-700 text-sm font-bold mb-2">Company Logo</label>
                     <?php if ($companyProfile && $companyProfile['companyLogo']): ?>
                         <div class="mb-4">
-                            <img src="<?php echo htmlspecialchars($companyProfile['companyLogo']); ?>" 
-                                alt="Company Logo" 
+                            <img src="<?php echo htmlspecialchars($companyProfile['companyLogo']); ?>"
+                                alt="Company Logo"
                                 class="h-32 w-32 object-contain border rounded">
                         </div>
                     <?php endif; ?>
@@ -199,27 +208,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         placeholder="Tell us about your company..."><?php echo $companyProfile ? htmlspecialchars($companyProfile['companyBio']) : ''; ?></textarea>
                 </div>
 
-                <!-- Verification Status -->
-                <?php if ($companyProfile): ?>
-                <div class="mb-6">
-                    <div class="flex items-center">
-                        <span class="text-sm font-medium text-gray-700 mr-2">Verification Status:</span>
-                        <?php if ($companyProfile['isVerified']): ?>
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                Verified
-                            </span>
-                        <?php else: ?>
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                Pending Verification
-                            </span>
-                        <?php endif; ?>
-                    </div>
-                </div>
-                <?php endif; ?>
-
                 <!-- Submit Button -->
                 <div class="flex justify-end">
-                    <button type="submit" 
+                    <button type="submit"
                         class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                         <?php echo $companyProfile ? 'Update Profile' : 'Create Profile'; ?>
                     </button>
@@ -228,4 +219,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 </body>
-</html> 
+</html>

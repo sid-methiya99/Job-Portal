@@ -36,10 +36,10 @@ $stats = [
 ];
 
 // Get total and active jobs count
-$query = "SELECT 
+$query = "SELECT
             COUNT(*) as total,
             SUM(CASE WHEN isActive = TRUE AND expired = FALSE AND deleted = FALSE THEN 1 ELSE 0 END) as active
-          FROM Job 
+          FROM Job
           WHERE companyId = :companyId";
 $stmt = $db->prepare($query);
 $stmt->bindParam(":companyId", $companyProfile['id']);
@@ -49,7 +49,7 @@ $stats['totalJobs'] = $jobStats['total'];
 $stats['activeJobs'] = $jobStats['active'];
 
 // Get total and pending applications count
-$query = "SELECT 
+$query = "SELECT
             COUNT(*) as total,
             SUM(CASE WHEN status = 'PENDING' THEN 1 ELSE 0 END) as pending
           FROM Applications a
@@ -63,12 +63,12 @@ $stats['totalApplications'] = $appStats['total'];
 $stats['pendingApplications'] = $appStats['pending'];
 
 // Get recent job listings
-$query = "SELECT j.*, 
+$query = "SELECT j.*,
           (SELECT COUNT(*) FROM Applications a WHERE a.jobId = j.id) as applicationCount,
           (SELECT COUNT(*) FROM Applications a WHERE a.jobId = j.id AND a.status = 'PENDING') as pendingCount
-          FROM Job j 
-          WHERE j.companyId = :companyId 
-          ORDER BY j.createdAt DESC 
+          FROM Job j
+          WHERE j.companyId = :companyId
+          ORDER BY j.createdAt DESC
           LIMIT 5";
 $stmt = $db->prepare($query);
 $stmt->bindParam(":companyId", $companyProfile['id']);
@@ -76,7 +76,7 @@ $stmt->execute();
 $recentJobs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Get recent applications
-$query = "SELECT a.*, j.title as jobTitle, u.name as applicantName, u.email as applicantEmail 
+$query = "SELECT a.*, j.title as jobTitle, u.name as applicantName, u.email as applicantEmail
           FROM Applications a
           JOIN Job j ON a.jobId = j.id
           JOIN Users u ON a.userId = u.id
@@ -126,8 +126,8 @@ $recentApplications = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div>
                     <h1 class="text-3xl font-bold text-gray-900">Welcome, <?php echo htmlspecialchars($companyProfile['companyName']); ?>!</h1>
                     <p class="mt-1 text-sm text-gray-600">
-                        <?php echo $companyProfile['isVerified'] ? 
-                            '<span class="text-green-600"><i class="fas fa-check-circle"></i> Verified Company</span>' : 
+                        <?php echo $companyProfile['isVerified'] ?
+                            '<span class="text-green-600"><i class="fas fa-check-circle"></i> Verified Company</span>' :
                             '<span class="text-yellow-600"><i class="fas fa-clock"></i> Verification Pending</span>'; ?>
                     </p>
                 </div>
@@ -275,8 +275,8 @@ $recentApplications = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             </p>
                                         </div>
                                         <div>
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                                <?php 
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                                <?php
                                                 switch($application['status']) {
                                                     case 'PENDING':
                                                         echo 'bg-yellow-100 text-yellow-800';
@@ -305,4 +305,4 @@ $recentApplications = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
 </body>
-</html> 
+</html>

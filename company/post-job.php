@@ -39,36 +39,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $job->description = $_POST['description'];
         $job->type = $_POST['type'];
         $job->workMode = $_POST['workMode'];
-        $job->city = $_POST['city'];
-        $job->address = $_POST['address'];
-        $job->skills = isset($_POST['skills']) ? explode(',', $_POST['skills']) : [];
-        
+        $job->location = $_POST['location'];
+        $job->skills = isset($_POST['skills']) ? json_encode(explode(',', $_POST['skills'])) : null;
+
         // Handle salary range
-        $job->hasSalaryRange = isset($_POST['hasSalaryRange']) && $_POST['hasSalaryRange'] === 'yes';
-        if ($job->hasSalaryRange) {
-            $job->minSalary = $_POST['minSalary'];
-            $job->maxSalary = $_POST['maxSalary'];
-            $job->currency = $_POST['currency'];
+        if (isset($_POST['salary_min']) && isset($_POST['salary_max'])) {
+            $job->salary_min = (int)$_POST['salary_min'];
+            $job->salary_max = (int)$_POST['salary_max'];
+        } else {
+            $job->salary_min = null;
+            $job->salary_max = null;
         }
 
         // Handle experience range
-        $job->hasExperiencerange = isset($_POST['hasExperienceRange']) && $_POST['hasExperienceRange'] === 'yes';
-        if ($job->hasExperiencerange) {
-            $job->minExperience = $_POST['minExperience'];
-            $job->maxExperience = $_POST['maxExperience'];
+        if (isset($_POST['experience_min']) && isset($_POST['experience_max'])) {
+            $job->experience_min = (int)$_POST['experience_min'];
+            $job->experience_max = (int)$_POST['experience_max'];
+        } else {
+            $job->experience_min = null;
+            $job->experience_max = null;
         }
 
-        // Handle expiry date
-        $job->hasExpiryDate = isset($_POST['hasExpiryDate']) && $_POST['hasExpiryDate'] === 'yes';
-        if ($job->hasExpiryDate) {
-            $job->expiryDate = $_POST['expiryDate'];
-        }
-
-        // Set company information
-        $job->companyName = $companyProfile['companyName'];
-        $job->companyEmail = $companyProfile['companyEmail'];
-        $job->companyBio = $companyProfile['companyBio'];
-        $job->companyLogo = $companyProfile['companyLogo'];
+        // Set default values
+        $job->isActive = 1;
+        $job->expired = 0;
+        $job->deleted = 0;
 
         if ($job->create()) {
             header("Location: jobs.php");
@@ -171,19 +166,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <!-- Location -->
-                <div class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2">
-                    <div>
-                        <label for="city" class="block text-gray-700 text-sm font-bold mb-2">City *</label>
-                        <input type="text" id="city" name="city" required
-                            class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            placeholder="e.g., New York">
-                    </div>
-                    <div>
-                        <label for="address" class="block text-gray-700 text-sm font-bold mb-2">Address</label>
-                        <input type="text" id="address" name="address"
-                            class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            placeholder="Full address (optional)">
-                    </div>
+                <div class="mb-6">
+                    <label for="location" class="block text-gray-700 text-sm font-bold mb-2">Location *</label>
+                    <input type="text" id="location" name="location" required
+                        class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        placeholder="e.g., New York, NY or Remote">
                 </div>
 
                 <!-- Skills -->
@@ -261,7 +248,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <!-- Submit Button -->
                 <div class="flex justify-end">
-                    <button type="submit" 
+                    <button type="submit"
                         class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                         Post Job
                     </button>
@@ -296,4 +283,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         });
     </script>
 </body>
-</html> 
+</html>

@@ -23,36 +23,45 @@ $users = $user->getAllUsersWithPagination($limit, $offset);
 $totalUsers = $user->getTotalUsers();
 $totalPages = ceil($totalUsers / $limit);
 
-// Handle user actions
-$message = '';
-$messageType = '';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['action']) && isset($_POST['userId'])) {
-        $targetUserId = $_POST['userId'];
-        
-        switch ($_POST['action']) {
-            case 'block':
-                if ($user->blockUser($targetUserId)) {
-                    $message = "User blocked successfully";
-                    $messageType = "success";
-                }
-                break;
-            case 'unblock':
-                if ($user->unblockUser($targetUserId)) {
-                    $message = "User unblocked successfully";
-                    $messageType = "success";
-                }
-                break;
-            case 'delete':
-                if ($user->deleteUser($targetUserId)) {
-                    $message = "User deleted successfully";
-                    $messageType = "success";
-                }
-                break;
-        }
-    }
+// Get company information for HR users
+$companyQuery = "SELECT userId, companyName, isVerified FROM Company";
+$companyStmt = $db->prepare($companyQuery);
+$companyStmt->execute();
+$companies = [];
+while ($row = $companyStmt->fetch(PDO::FETCH_ASSOC)) {
+    $companies[$row['userId']] = $row;
 }
+
+        // Handle user actions
+        $message = '';
+        $messageType = '';
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (isset($_POST['action']) && isset($_POST['userId'])) {
+                $targetUserId = $_POST['userId'];
+
+                switch ($_POST['action']) {
+                    case 'block':
+                        if ($user->blockUser($targetUserId)) {
+                            $message = "User blocked successfully";
+                            $messageType = "success";
+                        }
+                        break;
+                    case 'unblock':
+                        if ($user->unblockUser($targetUserId)) {
+                            $message = "User unblocked successfully";
+                            $messageType = "success";
+                        }
+                        break;
+                    case 'delete':
+                        if ($user->deleteUser($targetUserId)) {
+                            $message = "User deleted successfully";
+                            $messageType = "success";
+                        }
+                        break;
+                }
+            }
+        }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -118,6 +127,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         Status
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Company
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Joined
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -144,17 +156,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                            Active
-                                        </span>
+                                        <?php if ($userData['blockedByAdmin']): ?>
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                                Blocked
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                Active
+                                            </span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <?php if ($userData['role'] === 'HR' && isset($companies[$userData['id']])): ?>
+                                            <?php echo htmlspecialchars($companies[$userData['id']]['companyName']); ?>
+                                        <?php else: ?>
+                                            -
+                                        <?php endif; ?>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         <?php echo date('M d, Y', strtotime($userData['createdAt'])); ?>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                                        <?php if ($userData['blockedByAdmin']): ?>
+                                            <form action="users.php" method="POST" class="inline">
+                                                <input type="hidden" name="userId" value="<?php echo $userData['id']; ?>">
+                                                <button type="submit" name="action" value="unblock"
+                                                    class="text-green-600 hover:text-green-900">
+                                                    Unblock
+                                                </button>
+                                            </form>
+                                        <?php else: ?>
+                                            <form action="users.php" method="POST" class="inline">
+                                                <input type="hidden" name="userId" value="<?php echo $userData['id']; ?>">
+                                                <button type="submit" name="action" value="block"
+                                                    class="text-red-600 hover:text-red-900"
+                                                    onclick="return confirm('Are you sure you want to block this user?')">
+                                                    Block
+                                                </button>
+                                            </form>
+                                        <?php endif; ?>
+                                        
                                         <form action="users.php" method="POST" class="inline">
                                             <input type="hidden" name="userId" value="<?php echo $userData['id']; ?>">
-                                            <button type="submit" name="action" value="delete" 
+                                            <button type="submit" name="action" value="delete"
                                                 class="text-red-600 hover:text-red-900"
                                                 onclick="return confirm('Are you sure you want to delete this user? This action cannot be undone.')">
                                                 Delete
@@ -179,14 +223,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         Previous
                     </a>
                 <?php endif; ?>
-                
+
                 <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                    <a href="?page=<?php echo $i; ?>" 
+                    <a href="?page=<?php echo $i; ?>"
                        class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium <?php echo $page === $i ? 'text-blue-600 bg-blue-50' : 'text-gray-700 hover:bg-gray-50'; ?>">
                         <?php echo $i; ?>
                     </a>
                 <?php endfor; ?>
-                
+
                 <?php if ($page < $totalPages): ?>
                     <a href="?page=<?php echo $page + 1; ?>" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
                         Next
@@ -197,4 +241,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
     </div>
 </body>
-</html> 
+</html>

@@ -63,11 +63,11 @@ class User {
         $stmt = $this->conn->prepare($query);
 
         $this->email = htmlspecialchars(strip_tags($this->email));
-        
+
         $stmt->bindParam(":email", $this->email);
-        
+
         $stmt->execute();
-        
+
         return $stmt;
     }
 
@@ -77,15 +77,15 @@ class User {
         }
 
         $query = "SELECT id FROM " . $this->table . " WHERE email = :email";
-        
+
         $stmt = $this->conn->prepare($query);
-        
+
         $this->email = htmlspecialchars(strip_tags($this->email));
-        
+
         $stmt->bindParam(":email", $this->email);
-        
+
         $stmt->execute();
-        
+
         return $stmt->rowCount() > 0;
     }
 
@@ -120,13 +120,13 @@ class User {
         }
 
         $query = "SELECT * FROM " . $this->table . " WHERE id = :id";
-        
+
         $stmt = $this->conn->prepare($query);
-        
+
         $stmt->bindParam(":id", $id);
-        
+
         $stmt->execute();
-        
+
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
@@ -135,14 +135,14 @@ class User {
             throw new Exception("Database connection not established");
         }
 
-        $query = "SELECT * FROM " . $this->table . " 
-                WHERE role != 'ADMIN' 
-                ORDER BY createdAt DESC 
+        $query = "SELECT * FROM " . $this->table . "
+                WHERE role != 'ADMIN'
+                ORDER BY createdAt DESC
                 LIMIT 10";
-        
+
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
-        
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -152,10 +152,10 @@ class User {
         }
 
         $query = "SELECT COUNT(*) as total FROM " . $this->table . " WHERE role != 'ADMIN'";
-        
+
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
-        
+
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result['total'];
     }
@@ -165,16 +165,16 @@ class User {
             throw new Exception("Database connection not established");
         }
 
-        $query = "SELECT * FROM " . $this->table . " 
-                WHERE role != 'ADMIN' 
-                ORDER BY createdAt DESC 
+        $query = "SELECT * FROM " . $this->table . "
+                WHERE role != 'ADMIN'
+                ORDER BY createdAt DESC
                 LIMIT :limit OFFSET :offset";
-        
+
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":limit", $limit, PDO::PARAM_INT);
         $stmt->bindParam(":offset", $offset, PDO::PARAM_INT);
         $stmt->execute();
-        
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -188,7 +188,7 @@ class User {
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":id", $userId);
         $stmt->execute();
-        
+
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$user || $user['role'] === 'ADMIN') {
             return false;
@@ -204,7 +204,7 @@ class User {
         $query = "DELETE FROM " . $this->table . " WHERE id = :id AND role != 'ADMIN'";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":id", $userId);
-        
+
         return $stmt->execute();
     }
 
@@ -214,15 +214,15 @@ class User {
         }
 
         $query = "SELECT * FROM " . $this->table . "
-                WHERE role != 'ADMIN' 
+                WHERE role != 'ADMIN'
                 AND (name LIKE :search OR email LIKE :search)
                 ORDER BY createdAt DESC";
-        
+
         $searchTerm = "%$searchTerm%";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":search", $searchTerm);
         $stmt->execute();
-        
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -234,29 +234,29 @@ class User {
         $query = "SELECT * FROM " . $this->table . "
                 WHERE role = :role
                 ORDER BY createdAt DESC";
-        
+
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":role", $role);
         $stmt->execute();
-        
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getUserStats() {
-        $query = "SELECT 
+        $query = "SELECT
                     SUM(CASE WHEN role = 'USER' THEN 1 ELSE 0 END) as jobSeekers,
                     SUM(CASE WHEN role = 'HR' THEN 1 ELSE 0 END) as hrManagers
-                 FROM " . $this->table . " 
+                 FROM " . $this->table . "
                  WHERE role != 'ADMIN'";
-                 
+
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         $stats = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+
         // Convert null values to 0
         $stats['jobSeekers'] = (int)$stats['jobSeekers'];
         $stats['hrManagers'] = (int)$stats['hrManagers'];
-        
+
         return $stats;
     }
 
@@ -277,9 +277,9 @@ class User {
             $stmt->execute();
 
             // Also verify all jobs from this company
-            $query = "UPDATE Job j 
-                     JOIN Company c ON j.companyId = c.id 
-                     SET j.isVerifiedJob = TRUE 
+            $query = "UPDATE Job j
+                     JOIN Company c ON j.companyId = c.id
+                     SET j.isVerifiedJob = TRUE
                      WHERE c.userId = :userId";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(":userId", $userId);
@@ -331,4 +331,4 @@ class User {
         }
     }
 }
-?> 
+?>

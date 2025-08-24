@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         // Define upload directories with absolute paths
         $uploadDir = __DIR__ . '/uploads/resumes/';
-        
+
         // Create directories if they don't exist
         if (!file_exists($uploadDir)) {
             if (!mkdir($uploadDir, 0777, true)) {
@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (isset($_FILES['resume']) && $_FILES['resume']['error'] === UPLOAD_ERR_OK) {
             $fileInfo = pathinfo($_FILES['resume']['name']);
             $extension = strtolower($fileInfo['extension']);
-            
+
             // Validate file type
             $allowedTypes = ['pdf', 'doc', 'docx'];
             if (!in_array($extension, $allowedTypes)) {
@@ -48,18 +48,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Generate unique filename
             $filename = uniqid('resume_') . '.' . $extension;
             $fullPath = $uploadDir . $filename;
-            
+
             // Move uploaded file
             if (!move_uploaded_file($_FILES['resume']['tmp_name'], $fullPath)) {
                 throw new Exception("Failed to upload resume.");
             }
-            
+
             // Store relative path in database
             $resumePath = 'uploads/resumes/' . $filename;
         }
 
         // Update user profile
-        $query = "UPDATE Users SET 
+        $query = "UPDATE Users SET
                 name = :name,
                 email = :email,
                 aboutMe = :aboutMe,
@@ -84,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($stmt->execute()) {
             $message = "Profile updated successfully!";
             $messageType = "success";
-            
+
             // Refresh user data
             $userData = $user->getUser($_SESSION['user_id']);
         } else {
@@ -146,7 +146,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <!-- Basic Information Section -->
                 <div class="mb-8">
                     <h2 class="text-xl font-semibold text-gray-900 mb-4">Basic Information</h2>
-                    
+
                     <!-- Name -->
                     <div class="mb-6">
                         <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Full Name *</label>
@@ -175,7 +175,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <!-- Skills Section -->
                 <div class="mb-8">
                     <h2 class="text-xl font-semibold text-gray-900 mb-4">Skills & Expertise</h2>
-                    
+
                     <!-- Skills -->
                     <div class="mb-6">
                         <label for="skills" class="block text-gray-700 text-sm font-bold mb-2">Skills</label>
@@ -189,7 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <!-- Social Links Section -->
                 <div class="mb-8">
                     <h2 class="text-xl font-semibold text-gray-900 mb-4">Social Links</h2>
-                    
+
                     <!-- LinkedIn -->
                     <div class="mb-6">
                         <label for="linkedinLink" class="block text-gray-700 text-sm font-bold mb-2">LinkedIn Profile</label>
@@ -212,11 +212,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <!-- Resume Section -->
                 <div class="mb-8">
                     <h2 class="text-xl font-semibold text-gray-900 mb-4">Resume</h2>
-                    
+
                     <div class="mb-6">
                         <?php if ($userData['resume']): ?>
                             <div class="mb-4">
-                                <a href="<?php echo htmlspecialchars($userData['resume']); ?>" 
+                                <a href="<?php echo htmlspecialchars($userData['resume']); ?>"
                                    target="_blank"
                                    class="inline-flex items-center text-blue-600 hover:text-blue-800">
                                     <i class="fas fa-file-pdf mr-2"></i>
@@ -237,7 +237,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <!-- Submit Button -->
                 <div class="flex justify-end">
-                    <button type="submit" 
+                    <button type="submit"
                         class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                         Update Profile
                     </button>
@@ -246,4 +246,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 </body>
-</html> 
+</html>

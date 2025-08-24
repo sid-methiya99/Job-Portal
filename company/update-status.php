@@ -22,10 +22,10 @@ $action = $_GET['action'];
 $jobId = $_GET['job_id'];
 
 // Verify that this application belongs to the current user's company
-$query = "SELECT a.*, j.companyId 
-          FROM Applications a 
-          JOIN Job j ON a.jobId = j.id 
-          JOIN Company c ON j.companyId = c.id 
+$query = "SELECT a.*, j.companyId
+          FROM Applications a
+          JOIN Job j ON a.jobId = j.id
+          JOIN Company c ON j.companyId = c.id
           WHERE a.id = :id AND c.userId = :userId";
 $stmt = $db->prepare($query);
 $stmt->bindParam(":id", $applicationId);
@@ -60,7 +60,7 @@ try {
     $stmt = $db->prepare($updateQuery);
     $stmt->bindParam(':status', $newStatus);
     $stmt->bindParam(':id', $applicationId);
-    
+
     if ($stmt->execute()) {
         $_SESSION['success_message'] = "Application status updated successfully!";
     } else {
@@ -72,4 +72,4 @@ try {
 
 header("Location: view-applications.php?job_id=" . $jobId);
 exit();
-?> 
+?>

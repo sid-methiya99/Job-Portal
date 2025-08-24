@@ -21,10 +21,10 @@ $db = $database->getConnection();
 $applicationId = $_GET['application_id'];
 
 // Get application details
-$query = "SELECT a.*, j.title as jobTitle, j.companyId, u.name as applicantName, u.email as applicantEmail 
-          FROM Applications a 
-          JOIN Job j ON a.jobId = j.id 
-          JOIN Users u ON a.userId = u.id 
+$query = "SELECT a.*, j.title as jobTitle, j.companyId, u.name as applicantName, u.email as applicantEmail
+          FROM Applications a
+          JOIN Job j ON a.jobId = j.id
+          JOIN Users u ON a.userId = u.id
           WHERE a.id = :id";
 $stmt = $db->prepare($query);
 $stmt->bindParam(":id", $applicationId);
@@ -88,7 +88,7 @@ if (!$application || $application['companyId'] !== $_SESSION['user_id']) {
                 <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
                     Application for <?php echo htmlspecialchars($application['jobTitle']); ?>
                 </h3>
-                
+
                 <!-- Applicant Information -->
                 <div class="border-t border-gray-200 px-4 py-5 sm:p-0">
                     <dl class="sm:divide-y sm:divide-gray-200">
@@ -107,8 +107,8 @@ if (!$application || $application['companyId'] !== $_SESSION['user_id']) {
                         <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
                             <dt class="text-sm font-medium text-gray-500">Application Status</dt>
                             <dd class="mt-1 text-sm sm:mt-0 sm:col-span-2">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                    <?php 
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                    <?php
                                     switch($application['status']) {
                                         case 'PENDING':
                                             echo 'bg-yellow-100 text-yellow-800';
@@ -146,7 +146,7 @@ if (!$application || $application['companyId'] !== $_SESSION['user_id']) {
                         <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
                             <dt class="text-sm font-medium text-gray-500">Resume</dt>
                             <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                                <a href="<?php echo htmlspecialchars($application['resume']); ?>" 
+                                <a href="<?php echo htmlspecialchars($application['resume']); ?>"
                                    target="_blank"
                                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
                                     <i class="fas fa-download mr-2"></i>
@@ -160,13 +160,13 @@ if (!$application || $application['companyId'] !== $_SESSION['user_id']) {
 
                 <!-- Action Buttons -->
                 <div class="mt-6 flex space-x-3">
-                    <a href="update-application.php?id=<?php echo $applicationId; ?>" 
+                    <a href="update-application.php?id=<?php echo $applicationId; ?>"
                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
                         <i class="fas fa-edit mr-2"></i>
                         Update Status
                     </a>
                     <?php if ($application['applicantEmail']): ?>
-                    <a href="mailto:<?php echo htmlspecialchars($application['applicantEmail']); ?>" 
+                    <a href="mailto:<?php echo htmlspecialchars($application['applicantEmail']); ?>"
                        class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
                         <i class="fas fa-envelope mr-2"></i>
                         Contact Applicant
@@ -177,4 +177,4 @@ if (!$application || $application['companyId'] !== $_SESSION['user_id']) {
         </div>
     </div>
 </body>
-</html> 
+</html>

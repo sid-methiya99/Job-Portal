@@ -44,13 +44,13 @@ require_once 'config/database.php';
                 <form id="searchForm" class="grid grid-cols-1 gap-6 md:grid-cols-4">
                     <div>
                         <label for="search" class="block text-sm font-medium text-gray-700">Search</label>
-                        <input type="text" name="search" id="search" 
+                        <input type="text" name="search" id="search"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                             placeholder="Job title, company, or keywords">
                     </div>
                     <div>
                         <label for="type" class="block text-sm font-medium text-gray-700">Job Type</label>
-                        <select id="type" name="type" 
+                        <select id="type" name="type"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                             <option value="">All Types</option>
                             <option value="FULL_TIME">Full Time</option>
@@ -61,7 +61,7 @@ require_once 'config/database.php';
                     </div>
                     <div>
                         <label for="workMode" class="block text-sm font-medium text-gray-700">Work Mode</label>
-                        <select id="workMode" name="workMode" 
+                        <select id="workMode" name="workMode"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                             <option value="">All Modes</option>
                             <option value="REMOTE">Remote</option>
@@ -71,7 +71,7 @@ require_once 'config/database.php';
                     </div>
                     <div>
                         <label for="minSalary" class="block text-sm font-medium text-gray-700">Minimum Salary</label>
-                        <input type="number" name="minSalary" id="minSalary" 
+                        <input type="number" name="minSalary" id="minSalary"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                             placeholder="Enter minimum salary">
                     </div>
@@ -130,13 +130,13 @@ require_once 'config/database.php';
                     jobsList.innerHTML = jobs.map(job => `
                         <div class="bg-white shadow rounded-lg overflow-hidden">
                             <div class="p-6">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0 h-10 w-10">
-                                        <img class="h-10 w-10 rounded-full" 
-                                             src="${job.companyLogo || 'assets/images/company-placeholder.png'}" 
-                                             alt="${job.companyName}"
-                                             onerror="this.src='assets/images/company-placeholder.png'">
-                                    </div>
+                                                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            <img class="h-10 w-10 rounded-full"
+                                                 src="${job.companyLogo || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHJ4PSIyMCIgZmlsbD0iI0U1RTdFQiIvPgogIDxwYXRoIGQ9Ik0xMiAxNkMxMiAxMy43OTA5IDEzLjc5MDkgMTIgMTYgMTJIMjRDMjYuMjA5MSAxMiAyOCAxMy43OTA5IDI4IDE2VjI0QzI4IDI2LjIwOTEgMjYuMjA5MSAyOCAyNCAyOEgxNkMxMy43OTA5IDI4IDEyIDI2LjIwOTEgMTIgMjRWMThaIiBmaWxsPSIjOUNBM0FGIi8+CiAgPHBhdGggZD0iTTE2IDE4SDI0TTE2IDIySDIwTTE2IDI2SDIyIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4K'}"
+                                                 alt="${job.companyName}"
+                                                 onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHJ4PSIyMCIgZmlsbD0iI0U1RTdFQiIvPgogIDxwYXRoIGQ9Ik0xMiAxNkMxMiAxMy43OTA5IDEzLjc5MDkgMTIgMTYgMTJIMjRDMjYuMjA5MSAxMiAyOCAxMy43OTA5IDI4IDE2VjI0QzI4IDI2LjIwOTEgMjYuMjA5MSAyOCAyNCAyOEgxNkMxMy43OTA5IDI4IDEyIDI2LjIwOTEgMTIgMjRWMThaIiBmaWxsPSIjOUNBM0FGIi8+CiAgPHBhdGggZD0iTTE2IDE4SDI0TTE2IDIySDIwTTE2IDI2SDIyIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4K'">
+                                        </div>
                                     <div class="ml-4">
                                         <h3 class="text-lg font-medium text-gray-900">
                                             <a href="job.php?id=${job.id}" class="hover:text-blue-600">
@@ -164,12 +164,17 @@ require_once 'config/database.php';
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
                                         ${job.location}
                                     </span>
+                                    ${job.salary_min && job.salary_max ? `
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                        $${job.salary_min.toLocaleString()} - $${job.salary_max.toLocaleString()}
+                                    </span>
+                                    ` : ''}
                                 </div>
                                 <div class="mt-4 flex justify-between items-center">
                                     <div class="text-sm text-gray-500">
                                         Posted ${new Date(job.createdAt).toLocaleDateString()}
                                     </div>
-                                    <a href="job.php?id=${job.id}" 
+                                    <a href="job.php?id=${job.id}"
                                        class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200">
                                         View Details
                                     </a>
@@ -181,11 +186,11 @@ require_once 'config/database.php';
                     // Render pagination
                     if (paginationData.totalPages > 1) {
                         let paginationHtml = '<nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">';
-                        
+
                         // Previous button
                         if (paginationData.currentPage > 1) {
                             paginationHtml += `
-                                <button onclick="loadJobs(${paginationData.currentPage - 1})" 
+                                <button onclick="loadJobs(${paginationData.currentPage - 1})"
                                     class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
                                     Previous
                                 </button>`;
@@ -194,7 +199,7 @@ require_once 'config/database.php';
                         // Page numbers
                         for (let i = 1; i <= paginationData.totalPages; i++) {
                             paginationHtml += `
-                                <button onclick="loadJobs(${i})" 
+                                <button onclick="loadJobs(${i})"
                                     class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium ${i === paginationData.currentPage ? 'text-blue-600 bg-blue-50' : 'text-gray-700 hover:bg-gray-50'}">
                                     ${i}
                                 </button>`;
@@ -203,7 +208,7 @@ require_once 'config/database.php';
                         // Next button
                         if (paginationData.currentPage < paginationData.totalPages) {
                             paginationHtml += `
-                                <button onclick="loadJobs(${paginationData.currentPage + 1})" 
+                                <button onclick="loadJobs(${paginationData.currentPage + 1})"
                                     class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
                                     Next
                                 </button>`;
@@ -246,4 +251,4 @@ require_once 'config/database.php';
     });
     </script>
 </body>
-</html> 
+</html>

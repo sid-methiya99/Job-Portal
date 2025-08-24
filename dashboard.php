@@ -153,13 +153,13 @@ $userData = $user->getUser($_SESSION['user_id']);
                     jobsContainer.innerHTML = '<p class="text-gray-500 text-center col-span-3">No jobs found</p>';
                     return;
                 }
-                
+
                 jobsContainer.innerHTML = jobs.map(job => `
                     <div class="bg-white overflow-hidden shadow rounded-lg">
                         <div class="p-6">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 h-10 w-10">
-                                    <img class="h-10 w-10 rounded-full" src="${job.companyLogo || 'assets/images/company-placeholder.png'}" alt="${job.companyName}" onerror="this.src='assets/images/company-placeholder.png'">
+                                    <img class="h-10 w-10 rounded-full" src="${job.companyLogo || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHJ4PSIyMCIgZmlsbD0iI0U1RTdFQiIvPgogIDxwYXRoIGQ9Ik0xMiAxNkMxMiAxMy43OTA5IDEzLjc5MDkgMTIgMTYgMTJIMjRDMjYuMjA5MSAxMiAyOCAxMy43OTA5IDI4IDE2VjI0QzI4IDI2LjIwOTEgMjYuMjA5MSAyOCAyNCAyOEgxNkMxMy43OTA5IDI4IDEyIDI2LjIwOTEgMTIgMjRWMThaIiBmaWxsPSIjOUNBM0FGIi8+CiAgPHBhdGggZD0iTTE2IDE4SDI0TTE2IDIySDIwTTE2IDI2SDIyIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4K'}" alt="${job.companyName}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHJ4PSIyMCIgZmlsbD0iI0U1RTdFQiIvPgogIDxwYXRoIGQ9Ik0xMiAxNkMxMiAxMy43OTA5IDEzLjc5MDkgMTIgMTYgMTJIMjRDMjYuMjA5MSAxMiAyOCAxMy43OTA5IDI4IDE2VjI0QzI4IDI2LjIwOTEgMjYuMjA5MSAyOCAyNCAyOEgxNkMxMy43OTA5IDI4IDEyIDI2LjIwOTEgMTIgMjRWMThaIiBmaWxsPSIjOUNBM0FGIi8+CiAgPHBhdGggZD0iTTE2IDE4SDI0TTE2IDIySDIwTTE2IDI2SDIyIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4K'">
                                 </div>
                                 <div class="ml-4">
                                     <h3 class="text-lg font-medium text-gray-900">${job.title}</h3>
@@ -191,4 +191,4 @@ $userData = $user->getUser($_SESSION['user_id']);
     });
     </script>
 </body>
-</html> 
+</html>

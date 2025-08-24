@@ -47,4 +47,4 @@ class Company {
         return $stmt;
     }
 }
-?> 
+?>

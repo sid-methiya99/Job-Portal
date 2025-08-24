@@ -30,7 +30,7 @@ $messageType = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action']) && isset($_POST['jobId'])) {
         $targetJobId = $_POST['jobId'];
-        
+
         switch ($_POST['action']) {
             case 'verify':
                 if ($job->verifyJob($targetJobId)) {
@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $messageType = "success";
                 }
                 break;
-           
+
             case 'activate':
                 if ($job->activateJob($targetJobId)) {
                     $message = "Job activated successfully";
@@ -170,8 +170,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                     Verify
                                                 </button>
                                             <?php endif; ?>
-                                        
-                                            <button type="submit" name="action" value="delete" 
+
+                                            <button type="submit" name="action" value="delete"
                                                 class="text-red-600 hover:text-red-900"
                                                 onclick="return confirm('Are you sure you want to delete this job? This action cannot be undone.')">
                                                 Delete
@@ -196,14 +196,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         Previous
                     </a>
                 <?php endif; ?>
-                
+
                 <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                    <a href="?page=<?php echo $i; ?>" 
+                    <a href="?page=<?php echo $i; ?>"
                        class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium <?php echo $page === $i ? 'text-blue-600 bg-blue-50' : 'text-gray-700 hover:bg-gray-50'; ?>">
                         <?php echo $i; ?>
                     </a>
                 <?php endfor; ?>
-                
+
                 <?php if ($page < $totalPages): ?>
                     <a href="?page=<?php echo $page + 1; ?>" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
                         Next
@@ -214,4 +214,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
     </div>
 </body>
-</html> 
+</html>

@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['apply'])) {
             if (isset($_FILES['resume']) && $_FILES['resume']['error'] === UPLOAD_ERR_OK) {
                 $fileInfo = pathinfo($_FILES['resume']['name']);
                 $extension = strtolower($fileInfo['extension']);
-                
+
                 // Validate file type
                 $allowedTypes = ['pdf', 'doc', 'docx'];
                 if (!in_array($extension, $allowedTypes)) {
@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['apply'])) {
 
                 // Generate unique filename
                 $resumePath = $uploadDir . 'resume_' . uniqid() . '.' . $extension;
-                
+
                 // Move uploaded file
                 if (!move_uploaded_file($_FILES['resume']['tmp_name'], $resumePath)) {
                     throw new Exception("Failed to upload resume.");
@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['apply'])) {
             }
 
             // Insert application
-            $query = "INSERT INTO Applications (id, jobId, userId, coverLetter, resume, status) 
+            $query = "INSERT INTO Applications (id, jobId, userId, coverLetter, resume, status)
                      VALUES (UUID(), :jobId, :userId, :coverLetter, :resume, 'PENDING')";
             $stmt = $db->prepare($query);
             $stmt->bindParam(":jobId", $jobId);
@@ -161,8 +161,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['apply'])) {
                         </p>
                     </div>
                     <?php if ($jobData['companyLogo']): ?>
-                        <img src="<?php echo htmlspecialchars($jobData['companyLogo']); ?>" 
-                             alt="<?php echo htmlspecialchars($jobData['companyName']); ?>" 
+                        <img src="<?php echo htmlspecialchars($jobData['companyLogo']); ?>"
+                             alt="<?php echo htmlspecialchars($jobData['companyName']); ?>"
                              class="h-16 w-16 object-contain">
                     <?php endif; ?>
                 </div>
@@ -196,7 +196,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['apply'])) {
                     <div>
                         <dt class="text-sm font-medium text-gray-500">Salary Range</dt>
                         <dd class="mt-1 text-sm text-gray-900">
-                            <?php 
+                            <?php
                             if ($jobData['salary_min'] && $jobData['salary_max']) {
                                 echo '$' . number_format($jobData['salary_min']) . ' - $' . number_format($jobData['salary_max']);
                             } elseif ($jobData['salary_min']) {
@@ -234,7 +234,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['apply'])) {
                     </p>
                 <?php endif; ?>
                 <?php if ($jobData['companyWebsite']): ?>
-                    <a href="<?php echo htmlspecialchars($jobData['companyWebsite']); ?>" 
+                    <a href="<?php echo htmlspecialchars($jobData['companyWebsite']); ?>"
                        target="_blank"
                        class="text-blue-600 hover:text-blue-800 text-sm">
                         <i class="fas fa-external-link-alt mr-1"></i>
@@ -251,7 +251,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['apply'])) {
                         <div>
                             <label for="coverLetter" class="block text-sm font-medium text-gray-700">Cover Letter</label>
                             <div class="mt-1">
-                                <textarea id="coverLetter" name="coverLetter" rows="4" 
+                                <textarea id="coverLetter" name="coverLetter" rows="4"
                                     class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
                                     placeholder="Tell us why you're a great fit for this position..."></textarea>
                             </div>
@@ -270,7 +270,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['apply'])) {
                             </div>
                         </div>
                         <div>
-                            <button type="submit" name="apply" 
+                            <button type="submit" name="apply"
                                 class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                 Submit Application
                             </button>
@@ -303,4 +303,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['apply'])) {
         </div>
     </div>
 </body>
-</html> 
+</html>

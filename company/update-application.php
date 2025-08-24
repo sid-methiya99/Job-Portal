@@ -21,9 +21,9 @@ $db = $database->getConnection();
 $applicationId = $_GET['id'];
 
 // Get application details
-$query = "SELECT a.*, j.title as jobTitle, j.companyId 
-          FROM Applications a 
-          JOIN Job j ON a.jobId = j.id 
+$query = "SELECT a.*, j.title as jobTitle, j.companyId
+          FROM Applications a
+          JOIN Job j ON a.jobId = j.id
           WHERE a.id = :id";
 $stmt = $db->prepare($query);
 $stmt->bindParam(":id", $applicationId);
@@ -46,15 +46,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $db->prepare($query);
         $stmt->bindParam(":status", $_POST['status']);
         $stmt->bindParam(":id", $applicationId);
-        
+
         if ($stmt->execute()) {
             $message = "Application status updated successfully!";
             $messageType = "success";
-            
+
             // Refresh application data
-            $query = "SELECT a.*, j.title as jobTitle, j.companyId 
-                     FROM Applications a 
-                     JOIN Job j ON a.jobId = j.id 
+            $query = "SELECT a.*, j.title as jobTitle, j.companyId
+                     FROM Applications a
+                     JOIN Job j ON a.jobId = j.id
                      WHERE a.id = :id";
             $stmt = $db->prepare($query);
             $stmt->bindParam(":id", $applicationId);
@@ -144,4 +144,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 </body>
-</html> 
+</html>
