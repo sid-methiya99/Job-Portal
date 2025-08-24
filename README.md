@@ -1,146 +1,162 @@
-# Job Portal - PHP Application
+# Job Portal - Complete Job Board System
 
-A comprehensive job portal application built with PHP, MySQL, and Tailwind CSS. This project demonstrates modern web development practices with containerization and CI/CD integration.
+A comprehensive job portal built with PHP, MySQL, and modern web technologies. This system provides a complete solution for job seekers and companies to connect, with features for job posting, application management, and user administration.
 
-## 🚀 Quick Start with Docker (Windows)
+## 🚀 Features
 
-The easiest way to run this project on Windows:
+### For Job Seekers
+- **User Registration & Profile Management**: Create accounts and manage personal profiles
+- **Job Search & Discovery**: Browse jobs with advanced filtering (location, type, salary, work mode)
+- **Job Applications**: Apply to jobs with cover letters and resume uploads
+- **Application Tracking**: Monitor application status (Pending, Shortlisted, Rejected, Hired)
+- **Resume Management**: Upload and manage resumes
 
-```cmd
-# Clone the repository
-git clone <your-repository-url>
-cd Job-Portal
+### For Companies (HR)
+- **Company Profile Management**: Create and manage company profiles with logos
+- **Job Posting**: Create detailed job listings with requirements and salary information
+- **Application Management**: Review and manage job applications
+- **Candidate Evaluation**: Shortlist, reject, or hire candidates
+- **Resume Viewing**: Access candidate resumes for evaluation
 
-# Start all services
-docker-compose up --build
+### For Administrators
+- **User Management**: Monitor and manage all users in the system
+- **System Overview**: Dashboard with statistics and system health
+- **Content Moderation**: Manage jobs and user accounts
 
-# Access the application
-# Job Portal: http://localhost:8080
-# phpMyAdmin: http://localhost:8081 (user: jobportal, pass: jobportal123)
-```
+## 🏗️ System Architecture
 
-## 📋 Features
-
-- **User Management**: Registration, login, and role-based access control
-- **Job Posting**: Companies can post job opportunities
-- **Job Search**: Users can search and apply for jobs
-- **Application Management**: Track job applications and status
-- **Admin Panel**: Manage users, jobs, and company verifications
-- **Responsive Design**: Built with Tailwind CSS for mobile-friendly interface
-
-## 🛠️ Technology Stack
-
-- **Backend**: PHP 8.1
+### Technology Stack
+- **Backend**: PHP 8.1 with Apache
 - **Database**: MySQL 8.0
-- **Frontend**: HTML, CSS (Tailwind CSS), JavaScript
-- **Web Server**: Apache
+- **Frontend**: HTML5, CSS3, JavaScript, Tailwind CSS
 - **Containerization**: Docker & Docker Compose
-- **CI/CD**: Jenkins (optional)
+- **Database Management**: phpMyAdmin
 
-## 🐳 Docker Setup (Windows Optimized)
+### Database Schema
+- **Users**: User accounts with roles (ADMIN, HR, USER)
+- **Company**: Company profiles and information
+- **Job**: Job listings with detailed requirements
+- **Applications**: Job applications with status tracking
+- **Experience**: User work experience
+- **Education**: User educational background
 
-This project includes Windows-optimized Docker configuration for development:
+## 🔄 User Flows
 
-- **Multi-container setup** with PHP app, MySQL database, and phpMyAdmin
-- **Windows-optimized** volume mounting for better performance
-- **Development-friendly** with hot reloading
-- **Pre-configured** database with sample data
+### Job Seeker Flow
+1. **Registration**: Create account as a job seeker
+2. **Profile Setup**: Complete profile with skills, experience, and education
+3. **Job Search**: Browse available jobs with filters
+4. **Application**: Apply to jobs with cover letter and resume
+5. **Tracking**: Monitor application status and updates
 
-### Services
+### Company (HR) Flow
+1. **Registration**: Create account as HR/Company representative
+2. **Company Profile**: Set up company profile with logo and information
+3. **Job Posting**: Create detailed job listings
+4. **Application Review**: Review incoming applications
+5. **Candidate Management**: Shortlist, interview, and hire candidates
 
-- **App**: PHP application on port 8080
-- **Database**: MySQL on port 3306
-- **phpMyAdmin**: Database management on port 8081
+### Admin Flow
+1. **System Monitoring**: Overview of all users and activities
+2. **User Management**: Monitor and manage user accounts
+3. **Content Oversight**: Ensure system integrity and quality
 
-## 🔧 Development (Windows)
+## 🛠️ Installation & Setup
 
 ### Prerequisites
-
-- Docker Desktop for Windows
+- Docker and Docker Compose
 - Git
 
-### Local Development
+### Quick Start
+```bash
+# Clone the repository
+git clone https://github.com/sid-methiya99/Job-Portal.git
+cd Job-Portal
 
-1. **Start the application**:
-   ```cmd
-   docker compose up -d
-   ```
+# Start the application
+docker compose up --build -d
 
-2. **Access the application**:
-   - Main app: http://localhost:8080
-   - Database: http://localhost:8081
-
-3. **Make changes**: PHP files are mounted as volumes, so changes reflect immediately
-
-4. **Rebuild CSS**: If you modify Tailwind CSS
-   ```cmd
-   docker-compose exec app npm run dev
-   ```
-
-### Database Management
-
-- **phpMyAdmin**: http://localhost:8081
-  - Username: `jobportal`
-  - Password: `jobportal123`
-- **Direct MySQL**: `docker-compose exec db mysql -u jobportal -p job_board`
-
-## 🧪 Testing
-
-### Manual Testing
-
-```cmd
-# Start services
-docker-compose up -d
-
-# Test application
-curl http://localhost:8080
-
-# Check database
-docker-compose exec db mysql -u jobportal -p job_board
+# Access the application
+# Main App: http://localhost:8080
+# phpMyAdmin: http://localhost:8081
 ```
 
-### Automated Testing with Jenkins
-
-The project includes a `Jenkinsfile` for CI/CD pipeline:
-
-1. Install Jenkins and required plugins
-2. Create a new pipeline job
-3. Point to this repository
-4. The pipeline will automatically build, test, and validate the application
+### Default Credentials
+- **Admin**: admin@100xjobs.com / password
+- **HR Users**: hr1@techcorp.com / password
+- **Job Seekers**: alice@example.com / password
 
 ## 📁 Project Structure
 
 ```
 Job-Portal/
-├── admin/              # Admin panel files
-├── api/                # API endpoints
-├── auth/               # Authentication files
-├── classes/            # PHP classes
-├── company/            # Company dashboard
-├── config/             # Configuration files
-├── db/                 # Database schema
-├── uploads/            # File uploads
-├── docker/             # Docker configuration
-├── Dockerfile          # PHP application container
-├── docker-compose.yml  # Multi-container setup
-├── Jenkinsfile         # CI/CD pipeline
-└── DEVOPS.md          # Detailed setup guide
+├── admin/                 # Admin panel files
+│   ├── dashboard.php     # Admin dashboard
+│   ├── users.php         # User management
+│   └── jobs.php          # Job management
+├── api/                  # API endpoints
+│   └── jobs.php          # Jobs API
+├── auth/                 # Authentication
+│   ├── login.php         # Login page
+│   ├── register.php      # Registration
+│   └── logout.php        # Logout
+├── classes/              # PHP classes
+│   ├── User.php          # User management
+│   ├── Job.php           # Job operations
+│   └── Company.php       # Company operations
+├── company/              # Company/HR panel
+│   ├── dashboard.php     # HR dashboard
+│   ├── profile.php       # Company profile
+│   ├── post-job.php      # Job posting
+│   ├── jobs.php          # Job management
+│   └── view-applications.php # Application review
+├── config/               # Configuration
+│   └── database.php      # Database connection
+├── db/                   # Database
+│   └── db.sql           # Database schema
+├── uploads/              # File uploads
+│   ├── company_logos/    # Company logos
+│   └── resumes/          # User resumes
+├── docker/               # Docker configuration
+├── Dockerfile            # Docker image
+├── docker-compose.yml    # Docker services
+└── README.md            # This file
 ```
 
-## 🎓 College Project Features
+## 🔧 Configuration
 
-This project demonstrates:
+### Environment Variables
+The system uses environment variables for database configuration:
+- `DB_HOST`: Database host (default: db)
+- `DB_NAME`: Database name (default: job_board)
+- `DB_USER`: Database user (default: jobportal)
+- `DB_PASSWORD`: Database password (default: jobportal123)
 
-- **Modern Web Development**: PHP, MySQL, responsive design
-- **DevOps Practices**: Docker containerization, CI/CD pipeline
-- **Database Design**: Relational database with proper relationships
-- **Security**: User authentication and role-based access
-- **User Experience**: Intuitive interface with Tailwind CSS
+### File Permissions
+The system automatically sets up proper permissions for:
+- Upload directories (company logos, resumes)
+- Application files
+- Database access
 
-### For Presentation
+## 🎯 Key Features Explained
 
-1. **Setup Demo**: Show `docker-compose up --build`
-2. **Application Demo**: Navigate through the job portal
-3. **Database Demo**: Show phpMyAdmin interface
-4. **Architecture Demo**: Explain Docker containers and services
-5. **CI/CD Demo**: Run Jenkins pipeline (if available)
+### Job Search & Filtering
+- **Semantic Search**: Search by job title, description, or location
+- **Advanced Filters**: Filter by job type, work mode, salary range
+- **Pagination**: Efficient browsing with paginated results
+- **Real-time Updates**: Jobs appear immediately after posting
+
+### Application Management
+- **Status Tracking**: Applications progress through states (Pending → Shortlisted → Hired/Rejected)
+- **Communication**: Cover letters and resume attachments
+- **Timeline**: Track application history and updates
+
+### Company Verification
+- **Automatic Verification**: Companies are verified upon profile creation
+- **Trust Indicators**: Verified badges for companies and jobs
+- **Quality Assurance**: Admin oversight for system integrity
+
+### File Management
+- **Secure Uploads**: File validation and secure storage
+- **Image Optimization**: Company logos with fallback placeholders
+- **Resume Support**: Multiple document formats supported
