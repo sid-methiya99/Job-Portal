@@ -1,163 +1,146 @@
-# Job Portal Application
+# Job Portal - PHP Application
 
-A comprehensive job portal web application built with PHP and MySQL that connects job seekers with employers. The platform facilitates job postings, applications, and hiring processes with a clean, modern interface.
+A comprehensive job portal application built with PHP, MySQL, and Tailwind CSS. This project demonstrates modern web development practices with containerization and CI/CD integration.
 
-## Features
+## 🚀 Quick Start with Docker (Windows)
 
-### For Job Seekers (Users)
-- Create and manage professional profiles
-- Search and apply for jobs
-- Track application status
-- Upload resumes and cover letters
-- View job recommendations
-- Manage application history
+The easiest way to run this project on Windows:
 
-### For Employers (HR)
-- Company profile management
-- Post and manage job listings
-- Review applications
-- Shortlist and hire candidates
-- Track applicant status
-- Verify company credentials
+```cmd
+# Clone the repository
+git clone <your-repository-url>
+cd Job-Portal
 
-### For Administrators
-- User management
-- Job posting moderation
-- Company verification
-- Platform statistics
-- Content moderation
+# Start all services
+docker-compose up --build
 
-## Technology Stack
+# Access the application
+# Job Portal: http://localhost:8080
+# phpMyAdmin: http://localhost:8081 (user: jobportal, pass: jobportal123)
+```
 
-- PHP 7.4+
-- MySQL 5.7+
-- HTML5/CSS3
-- TailwindCSS
-- JavaScript
-- PDO for database operations
+## 📋 Features
 
-## Directory Structure
+- **User Management**: Registration, login, and role-based access control
+- **Job Posting**: Companies can post job opportunities
+- **Job Search**: Users can search and apply for jobs
+- **Application Management**: Track job applications and status
+- **Admin Panel**: Manage users, jobs, and company verifications
+- **Responsive Design**: Built with Tailwind CSS for mobile-friendly interface
+
+## 🛠️ Technology Stack
+
+- **Backend**: PHP 8.1
+- **Database**: MySQL 8.0
+- **Frontend**: HTML, CSS (Tailwind CSS), JavaScript
+- **Web Server**: Apache
+- **Containerization**: Docker & Docker Compose
+- **CI/CD**: Jenkins (optional)
+
+## 🐳 Docker Setup (Windows Optimized)
+
+This project includes Windows-optimized Docker configuration for development:
+
+- **Multi-container setup** with PHP app, MySQL database, and phpMyAdmin
+- **Windows-optimized** volume mounting for better performance
+- **Development-friendly** with hot reloading
+- **Pre-configured** database with sample data
+
+### Services
+
+- **App**: PHP application on port 8080
+- **Database**: MySQL on port 3306
+- **phpMyAdmin**: Database management on port 8081
+
+## 🔧 Development (Windows)
+
+### Prerequisites
+
+- Docker Desktop for Windows
+- Git
+
+### Local Development
+
+1. **Start the application**:
+   ```cmd
+   docker-compose up -d
+   ```
+
+2. **Access the application**:
+   - Main app: http://localhost:8080
+   - Database: http://localhost:8081
+
+3. **Make changes**: PHP files are mounted as volumes, so changes reflect immediately
+
+4. **Rebuild CSS**: If you modify Tailwind CSS
+   ```cmd
+   docker-compose exec app npm run dev
+   ```
+
+### Database Management
+
+- **phpMyAdmin**: http://localhost:8081
+  - Username: `jobportal`
+  - Password: `jobportal123`
+- **Direct MySQL**: `docker-compose exec db mysql -u jobportal -p job_board`
+
+## 🧪 Testing
+
+### Manual Testing
+
+```cmd
+# Start services
+docker-compose up -d
+
+# Test application
+curl http://localhost:8080
+
+# Check database
+docker-compose exec db mysql -u jobportal -p job_board
+```
+
+### Automated Testing with Jenkins
+
+The project includes a `Jenkinsfile` for CI/CD pipeline:
+
+1. Install Jenkins and required plugins
+2. Create a new pipeline job
+3. Point to this repository
+4. The pipeline will automatically build, test, and validate the application
+
+## 📁 Project Structure
 
 ```
 Job-Portal/
-├── admin/                  # Admin dashboard and management
-│   ├── dashboard.php      # Admin main dashboard
-│   ├── jobs.php          # Job moderation
-│   └── users.php         # User management
-├── api/                   # API endpoints
-│   └── jobs.php          # Jobs API
-├── auth/                  # Authentication
-│   ├── login.php         # User login
-│   ├── logout.php        # Logout handler
-│   └── register.php      # User registration
-├── classes/              # Core classes
-│   ├── Company.php       # Company management
-│   ├── Job.php          # Job operations
-│   └── User.php         # User operations
-├── company/              # HR/Company features
-│   ├── dashboard.php     # Company dashboard
-│   ├── jobs.php         # Job management
-│   ├── post-job.php     # Job posting
-│   ├── profile.php      # Company profile
-│   └── view-applications.php # Application management
-├── config/               # Configuration
-│   └── database.php     # Database connection
-├── uploads/             # File uploads
-│   ├── company_logos/   # Company logos
-│   └── resumes/         # User resumes
-└── index.php            # Main entry point
+├── admin/              # Admin panel files
+├── api/                # API endpoints
+├── auth/               # Authentication files
+├── classes/            # PHP classes
+├── company/            # Company dashboard
+├── config/             # Configuration files
+├── db/                 # Database schema
+├── uploads/            # File uploads
+├── docker/             # Docker configuration
+├── Dockerfile          # PHP application container
+├── docker-compose.yml  # Multi-container setup
+├── Jenkinsfile         # CI/CD pipeline
+└── DEVOPS.md          # Detailed setup guide
 ```
 
-## Key Files and Their Functions
+## 🎓 College Project Features
 
-### Core Classes
-- `classes/User.php`: Handles user authentication, profile management, and role-based operations
-- `classes/Job.php`: Manages job posting, searching, and application processes
-- `classes/Company.php`: Handles company profile and verification
+This project demonstrates:
 
-### Authentication
-- `auth/login.php`: User login with role-based redirection
-- `auth/register.php`: User registration with role selection
-- `auth/logout.php`: Session termination
+- **Modern Web Development**: PHP, MySQL, responsive design
+- **DevOps Practices**: Docker containerization, CI/CD pipeline
+- **Database Design**: Relational database with proper relationships
+- **Security**: User authentication and role-based access
+- **User Experience**: Intuitive interface with Tailwind CSS
 
-### Company Management
-- `company/post-job.php`: Job creation and editing
-- `company/view-applications.php`: Application review and candidate selection
-- `company/update-status.php`: Updates application statuses (shortlist/hire/reject)
+### For Presentation
 
-### Admin Controls
-- `admin/dashboard.php`: Admin overview and statistics
-- `admin/verify-company.php`: Company verification process
-- `admin/jobs.php`: Job moderation and management
-
-## Database Schema
-
-The application uses the following main tables:
-- Users
-- Company
-- Job
-- Applications
-- Experience
-- Education
-
-## Installation
-
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/Job-Portal.git
-```
-
-2. Set up the database:
-- Create a MySQL database named 'job_board'
-- Import the database schema from `db/db.sql`
-
-3. Configure database connection:
-- Update `config/database.php` with your credentials:
-```php
-private $host = "localhost";
-private $db_name = "job_board";
-private $username = "your_username";
-private $password = "your_password";
-```
-
-4. Set up the web server:
-- Configure your web server (Apache/Nginx) to point to the project directory
-- Ensure PHP 7.4+ is installed and configured
-
-5. Set up file permissions:
-```bash
-chmod 755 -R Job-Portal/
-chmod 777 -R Job-Portal/uploads/
-```
-
-## Initial Setup
-
-1. Create an admin user:
-- The default admin credentials are:
-  - Email: admin@100xjobs.com
-  - Password: password
-
-2. First-time login:
-- Log in as admin
-- Verify HR accounts
-- Monitor job postings
-
-## Security Considerations
-
-- All user passwords are hashed using PHP's password_hash()
-- SQL injection prevention using PDO prepared statements
-- XSS protection with output escaping
-- CSRF protection on forms
-- Role-based access control
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a new Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details. 
+1. **Setup Demo**: Show `docker-compose up --build`
+2. **Application Demo**: Navigate through the job portal
+3. **Database Demo**: Show phpMyAdmin interface
+4. **Architecture Demo**: Explain Docker containers and services
+5. **CI/CD Demo**: Run Jenkins pipeline (if available)

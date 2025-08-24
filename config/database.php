@@ -1,10 +1,18 @@
 <?php
 class Database {
-    private $host = "localhost";
-    private $db_name = "job_board";
-    private $username = "sid";
-    private $password = "1234";
+    private $host;
+    private $db_name;
+    private $username;
+    private $password;
     private $conn;
+
+    public function __construct() {
+        // Use environment variables if available (Docker), otherwise use defaults
+        $this->host = getenv('DB_HOST') ?: 'localhost';
+        $this->db_name = getenv('DB_NAME') ?: 'job_board';
+        $this->username = getenv('DB_USER') ?: 'sid';
+        $this->password = getenv('DB_PASSWORD') ?: '1234';
+    }
 
     public function getConnection() {
         try {   
