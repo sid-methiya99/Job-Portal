@@ -63,7 +63,7 @@ This project includes Windows-optimized Docker configuration for development:
 
 1. **Start the application**:
    ```cmd
-   docker-compose up -d
+   docker compose up -d
    ```
 
 2. **Access the application**:
